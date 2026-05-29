@@ -548,9 +548,9 @@ textarea.input-field { resize: vertical; min-height: 80px; }
       <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
         <div class="drop-zone-title">Drop media here</div>
-        <div class="drop-zone-sub">Photos, videos, or scoresheets · saves offline first</div>
+        <div class="drop-zone-sub">Photos, videos, scoresheets, PDFs, or CSV/Excel — saves offline first</div>
       </div>
-      <input type="file" id="file-input" multiple accept="image/*,video/*,.pdf" style="display:none" onchange="handleFileSelect(event)"/>
+      <input type="file" id="file-input" multiple accept="image/*,video/*,.pdf,.csv,.xlsx,.xls" style="display:none" onchange="handleFileSelect(event)"/>
 
       <div class="section-label">Quick add</div>
       <div class="ingest-types">
@@ -562,9 +562,9 @@ textarea.input-field { resize: vertical; min-height: 80px; }
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
           <div><div class="itype-lbl">Photo</div><div class="itype-sub">Action or portrait</div></div>
         </div>
-        <div class="itype d" onclick="triggerFileInput('image/*,.pdf')">
+        <div class="itype d" onclick="triggerFileInput('image/*,.pdf,.csv,.xlsx,.xls')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-          <div><div class="itype-lbl">Scoresheet</div><div class="itype-sub">AI parses stats</div></div>
+          <div><div class="itype-lbl">Scoresheet</div><div class="itype-sub">Photo, PDF, or CSV/Excel</div></div>
         </div>
         <div class="itype c" onclick="triggerCamera()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
@@ -666,6 +666,15 @@ textarea.input-field { resize: vertical; min-height: 80px; }
       <button class="action-btn secondary" onclick="exportPDF()" style="margin-bottom:14px;">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         Print recruiter PDF
+      </button>
+
+      <div class="section-label">Upcoming games · recruiter schedule</div>
+      <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:0 14px;margin-bottom:14px;">
+        <div id="schedule-list"></div>
+      </div>
+      <button class="action-btn secondary" onclick="addScheduleGame()" style="margin-bottom:14px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:18px;height:18px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add game / event
       </button>
 
       <div class="section-label">Share to</div>
@@ -860,8 +869,11 @@ textarea.input-field { resize: vertical; min-height: 80px; }
       <div class="modal-sect-lbl">AI</div>
       <div class="setting-row">
         <div class="sr-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
-        <div class="sr-text"><div class="sr-label">Gemini API key</div><div class="sr-sub" id="settings-key-display">Not set</div></div>
-        <div class="sr-action" onclick="editApiKey()">Edit</div>
+        <div class="sr-text"><div class="sr-label">Groq API key</div><div class="sr-sub" id="settings-key-display">Not set</div></div>
+        <div style="display:flex;gap:6px;">
+          <div class="sr-action" onclick="editApiKey()">Edit</div>
+          <div class="sr-action" id="test-key-btn" onclick="testGroqKey()" style="color:var(--text3);">Test</div>
+        </div>
       </div>
       <div class="modal-sect-lbl">Profile</div>
       <div class="setting-row">
@@ -956,8 +968,8 @@ textarea.input-field { resize: vertical; min-height: 80px; }
         <div class="help-a">Your persona is the narrative angle coaches will remember. Use the AI Wizard to build a custom one, or pick a quick-start style. It shapes the tone of every bio and caption the app generates.</div>
       </div>
       <div class="help-row">
-        <div class="help-q">Do I need a Gemini API key?</div>
-        <div class="help-a">Only for AI features — stat parsing from photos, persona generation, and coaching tips. The key is free at ai.google.dev and is stored only on your device.</div>
+        <div class="help-q">Do I need a Groq API key?</div>
+        <div class="help-a">Only for AI features — stat parsing from photos, persona generation, and coaching tips. The key is free at console.groq.com and is stored only on your device.</div>
       </div>
       <div class="help-row" style="border-bottom:none;">
         <div class="help-q">Is my data safe if I switch phones?</div>
@@ -1032,6 +1044,7 @@ textarea.input-field { resize: vertical; min-height: 80px; }
           AI-generated · <span id="rv-persona-attr">The Grinder</span> persona
         </div>
       </div>
+      <div id="rv-schedule" style="display:none;margin-top:14px;"></div>
     </div>
     <div class="rv-footer">
       <button class="rv-fbtn" onclick="exportPDF()">
@@ -1246,23 +1259,27 @@ const PERSONA_ICONS = {
 };
 
 let appState = {
-  athlete: { name:'Marcus Rivera', school:'Lakewood Prep', gpa:'3.6', gradYear:'2027', position:'Shortstop', initials:'MR' },
+  athlete: { name:'Marcus Rivera', school:'Lakewood Prep', gpa:'3.6', gradYear:'2027', position:'Shortstop', initials:'MR', logoDataUrl:'' },
   sport: 'Baseball',
   persona: 'grinder',
+  personas: ['grinder'],
   customPersona: null,
   season: 'Spring 2025',
   seasons: ['Spring 2025','Fall 2024','Spring 2024'],
   stats: {},
   customStats: [],
   hiddenStatIndices: [],
+  schedule: [],
+  includeScheduleInExport: true,
+  navigationHistory: [],
   media: [
-    { id:'m1', type:'video', name:'Hitting reel 2025', tag:'AI tagged · featured', tags:['Highlight','Batting'], featured:true, visible:true },
-    { id:'m2', type:'photo', name:'Game action', tag:'AI tagged · 3 photos', tags:['Action','Game play'], featured:false, visible:true },
-    { id:'m3', type:'video', name:'Tournament semi', tag:'Walk-off · May 2025', tags:['Highlight','Clutch moment'], featured:false, visible:true },
-    { id:'m4', type:'photo', name:'Portrait · headshot', tag:'Profile photo', tags:['Portrait'], featured:false, visible:false },
+    { id:'m1', type:'video', name:'Hitting reel 2025', tag:'AI tagged · featured', tags:['Highlight','Batting'], featured:true, visible:true, isSelectedForExport:true },
+    { id:'m2', type:'photo', name:'Game action', tag:'AI tagged · 3 photos', tags:['Action','Game play'], featured:false, visible:true, isSelectedForExport:true },
+    { id:'m3', type:'video', name:'Tournament semi', tag:'Walk-off · May 2025', tags:['Highlight','Clutch moment'], featured:false, visible:true, isSelectedForExport:false },
+    { id:'m4', type:'photo', name:'Portrait · headshot', tag:'Profile photo', tags:['Portrait'], featured:false, visible:false, isSelectedForExport:false },
   ],
   queue: [],
-  geminiKey: '',
+  groqKey: '',
   shareFormat: 'square',
   accentColor: '#378ADD',
   accentDark: '#1A2850'
@@ -1272,7 +1289,7 @@ let appState = {
 const INTRO_STEPS = [
   { icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2c0 0-4 4-4 9a4 4 0 0 0 8 0c0-5-4-9-4-9z"/></svg>`, title:'Welcome to DraftBound', body:'The career launchpad for youth athletes. Turn sideline moments into a professional recruiting profile in under 5 minutes.', btn:'Get started' },
   { icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>`, title:'Ingest at the game', body:'At a game? Hit Ingest and drop photos, videos, or a scoresheet photo. The app saves everything offline first — no signal needed.', btn:'Next' },
-  { icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`, title:'AI builds the profile', body:'Add your Gemini API key in Settings (it\'s free) and the AI will tag media, parse stats from scoresheets, and write a recruiter-ready narrative.', btn:'Next' },
+  { icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`, title:'AI builds the profile', body:'Add your free Groq API key in Settings and the AI will tag media, parse stats from scoresheets, and write a recruiter-ready narrative.', btn:'Next' },
   { icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`, title:'Share in one tap', body:'The Recruiter View button at the top gives you a clean, always-live profile link. Share it to any coach, anywhere, instantly.', btn:'Start building' },
 ];
 let introStep = 0;
@@ -1347,7 +1364,7 @@ async function runPersonaWizard() {
   document.getElementById('wiz-result-name').value = '';
   document.getElementById('wiz-result-text').value = '';
 
-  if (!appState.geminiKey) {
+  if (!appState.groqKey) {
     const fallbackName = wizAnswers.style.includes('Relentless') ? 'The Grinder' :
       wizAnswers.style.includes('Explosive') ? 'The Playmaker' :
       wizAnswers.style.includes('leader') || wizAnswers.style.includes('Leader') ? 'The Leader' : 'The Specialist';
@@ -1357,24 +1374,31 @@ async function runPersonaWizard() {
   }
 
   try {
-    const prompt = `You are a sports recruiting copywriter. Create a unique athlete persona for a recruiting profile.
+    const prompt = `You are an elite sports marketing agency copywriter crafting athlete recruiting profiles. Your writing is bold, vivid, and high-energy — the kind that makes coaches stop scrolling.
+
 Athlete: ${appState.athlete.name}, ${appState.sport} ${appState.athlete.position}, Class of ${appState.athlete.gradYear}, ${appState.athlete.school}.
 Playing style: ${wizAnswers.style}
 What coaches say: ${wizAnswers.coaches}
 Defining moment: ${moment || 'Not provided'}
 Biggest strength: ${strength || 'Not provided'}
 
-Respond with ONLY valid JSON, no markdown:
-{"name":"The [unique creative title]","narrative":"3-4 sentence compelling recruiting narrative in third person, specific and vivid"}`;
+Create a unique persona name and a 3-4 sentence recruiting narrative. Use active voice, specific athletic language, and the energy of a national championship program. Make it unforgettable.
 
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${appState.geminiKey}`, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ contents:[{ parts:[{ text: prompt }] }] })
+Respond with ONLY valid JSON, no markdown:
+{"name":"The [unique creative title]","narrative":"3-4 sentence compelling recruiting narrative in third person, specific and vivid, written at temperature 0.8 creativity"}`;
+
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+appState.groqKey},
+      body: JSON.stringify({
+        model:'llama-3.3-70b-versatile',
+        temperature: 0.8,
+        messages:[{role:'user',content:prompt}]
+      })
     });
     const data = await res.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    const clean = text.replace(/```json|```/g,'').trim();
-    const parsed = JSON.parse(clean);
+    const text = (data.choices?.[0]?.message?.content||'').replace(/```json|```/g,'').trim();
+    const parsed = JSON.parse(text);
     showWizResult(parsed.name, parsed.narrative);
   } catch(e) {
     showWizResult('The ' + appState.athlete.name.split(' ')[0], `${appState.athlete.name} is a ${appState.sport} ${appState.athlete.position} whose ${wizAnswers.style.toLowerCase()} sets them apart. ${wizAnswers.coaches}. A profile built for the programs that know what they want.`);
@@ -1405,30 +1429,34 @@ function applyWizardPersona() {
   showToast('Persona applied');
 }
 
-// ── CLEAR DEMO DATA ──
 function clearDemoData() {
-  if (!confirm('This will clear the demo athlete and all sample data. Continue?')) return;
-  appState.athlete = { name:'', school:'', gpa:'', gradYear:'', position:'', initials:'' };
-  appState.media = [];
-  appState.customStats = [];
-  appState.queue = [];
-  appState.sport = 'Baseball';
-  appState.persona = 'grinder';
-  appState.season = 'Spring 2025';
-  appState.seasons = ['Spring 2025'];
-  saveState();
-  initApp();
-  closeModal('settings-modal');
-  showToast('Demo data cleared — ready for your athlete');
+  showConfirm(
+    'Clear demo data',
+    'This will reset to a blank profile. Make sure you\'ve saved a backup first.',
+    () => {
+      appState.athlete = { name:'', school:'', gpa:'', gradYear:'', position:'', initials:'', logoDataUrl:'' };
+      appState.media = []; appState.customStats = []; appState.queue = [];
+      appState.sport = 'Baseball'; appState.persona = 'grinder'; appState.personas = ['grinder'];
+      appState.season = 'Spring 2025'; appState.seasons = ['Spring 2025'];
+      appState.hiddenStatIndices = []; appState.athletes = null; appState.stats = {};
+      appState.schedule = [];
+      saveState(); initApp(); closeModal('settings-modal');
+      showToast('Demo data cleared');
+    },
+    'Clear everything'
+  );
 }
 
-// ── LEAVE CONFIRM ──
+// ── LEAVE GUARD — popstate only, no native browser dialogs ──
 function initLeaveGuard() {
-  window.addEventListener('beforeunload', e => {
-    e.preventDefault();
+  // Push a state so we have something to intercept on back
+  history.pushState({ db: true }, '');
+  window.addEventListener('popstate', () => {
+    // Re-push so the back button doesn't actually navigate away
+    history.pushState({ db: true }, '');
     document.getElementById('leave-overlay').classList.add('open');
-    e.returnValue = '';
   });
+  // Auto-save silently when tab is hidden or minimized
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') saveState();
   });
@@ -1468,7 +1496,7 @@ function generateLandingPage(style) {
   const a = appState.athlete;
   const p = PERSONA_DATA[appState.persona] || PERSONA_DATA.grinder;
   const sport = appState.sport;
-  const stats = (SPORT_STATS[sport] || []).filter((s, i) => !(appState.hiddenStatIndices || []).includes(i)).slice(0, 6);
+  const stats = getActiveStats().filter((s, i) => !(appState.hiddenStatIndices || []).includes(i)).slice(0, 6);
   const media = appState.media.filter(m => m.visible);
   const contactEmail = '';
   const athleteName = a.name || 'Athlete';
@@ -1764,9 +1792,9 @@ function saveState() {
   if (!db) return;
   const tx = db.transaction('state','readwrite');
   const store = tx.objectStore('state');
-  const { geminiKey, ...safeState } = appState;
+  const { groqKey, ...safeState } = appState;
   store.put(JSON.stringify(safeState), 'appState');
-  if (appState.geminiKey) localStorage.setItem('db_api_key', btoa(appState.geminiKey));
+  if (appState.groqKey) localStorage.setItem('db_api_key', btoa(appState.groqKey));
 }
 
 function loadState() {
@@ -1791,7 +1819,7 @@ function loadState() {
       } catch(err) {}
     }
     const savedKey = localStorage.getItem('db_api_key');
-    if (savedKey) { try { appState.geminiKey = atob(savedKey); } catch(e){} }
+    if (savedKey) { try { appState.groqKey = atob(savedKey); } catch(e){} }
     initApp();
   };
   req.onerror = () => initApp();
@@ -1806,8 +1834,14 @@ function initApp() {
   renderShareScreen();
   renderRecruiterView();
   renderShareHeroCanvas();
-  document.getElementById('settings-key-display').textContent = appState.geminiKey ? 'AIza••••••••' + appState.geminiKey.slice(-4) : 'Not set';
+  document.getElementById('settings-key-display').textContent = appState.groqKey ? 'gsk_••••••••' + appState.groqKey.slice(-4) : 'Not set';
   syncSettingsFields();
+  renderScheduleList();
+  // Restore logo to avatar if saved
+  if (appState.athlete.logoDataUrl) {
+    const av = document.getElementById('ov-avatar');
+    if (av) av.innerHTML = `<img src="${appState.athlete.logoDataUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="logo"/>`;
+  }
   if (!localStorage.getItem('db_intro_done')) showIntro();
   initLeaveGuard();
   registerPWA();
@@ -1836,7 +1870,7 @@ function renderOverview() {
   document.getElementById('ov-yr-pill').textContent = a.gradYear;
 
   const promptArea = document.getElementById('ov-prompt-area');
-  const baseStats = SPORT_STATS[appState.sport] || [];
+  const baseStats = getActiveStats();
   const missing = [];
   if (appState.media.filter(m=>m.type==='video'&&m.visible).length === 0) missing.push('Add a highlight video to strengthen your profile');
   if (!a.gpa) missing.push('GPA not entered — many D1 programs filter below 3.0');
@@ -1844,7 +1878,7 @@ function renderOverview() {
     promptArea.innerHTML = `<div class="prompt-card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><div class="prompt-text"><strong>AI coaching tip:</strong> ${missing[0]}</div></div>`;
   } else { promptArea.innerHTML = ''; }
 
-  const statsToShow = (SPORT_STATS[appState.sport] || []).slice(0,4);
+  const statsToShow = getActiveStats().filter((_,i)=>!(appState.hiddenStatIndices||[]).includes(i)).slice(0,4);
   const grid = document.getElementById('ov-stat-grid');
   grid.innerHTML = statsToShow.map(s => `
     <div class="stat-card">
@@ -1867,21 +1901,36 @@ function renderOverview() {
     </div>`).join('') + `<div class="media-add" onclick="navigateTo('ingest')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span>Add media</span></div>`;
 }
 
+function getActiveStats() {
+  const sport = appState.sport;
+  const season = appState.season;
+  if (!appState.stats[sport]) appState.stats[sport] = {};
+  if (!appState.stats[sport][season]) {
+    appState.stats[sport][season] = JSON.parse(JSON.stringify(SPORT_STATS[sport] || []));
+  }
+  return appState.stats[sport][season];
+}
+
 function renderStatsScreen() {
-  const stats = SPORT_STATS[appState.sport] || [];
+  const stats = getActiveStats();
   const all = [...stats, ...appState.customStats];
   const hidden = appState.hiddenStatIndices || [];
-  document.getElementById('stats-section-lbl').textContent = appState.sport + ' · ' + appState.season + ' · tap eye to toggle';
+  document.getElementById('stats-section-lbl').textContent = appState.sport + ' · ' + appState.season + ' · tap value to edit';
   const eyeOpen = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
   const eyeOff  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
   const list = document.getElementById('stats-list');
   list.innerHTML = all.map((s,i) => {
     const isHidden = hidden.includes(i);
+    const isCustom = i >= stats.length;
     return `
     <div class="stat-row-item" id="sri-${i}" style="${isHidden?'opacity:0.4':''}">
       <span class="sri-lbl">${s.l}</span>
       <div class="sri-right">
-        <span class="sri-val">${s.v}</span>
+        <input class="stat-val-input" value="${s.v}" data-idx="${i}" data-custom="${isCustom}"
+          style="font-family:var(--font-head);font-size:18px;font-weight:600;color:var(--text1);border:none;background:transparent;width:80px;text-align:right;padding:2px 4px;border-radius:4px;cursor:text;"
+          onchange="updateStatValue(${i},this.value,${isCustom})"
+          onfocus="this.style.background='var(--teal-light)';this.style.outline='none'"
+          onblur="this.style.background='transparent'"/>
         ${s.d==='up'?`<span class="sri-delta up">${s.dd}</span>`:s.d==='dn'?`<span class="sri-delta dn">${s.dd}</span>`:''}
         <div class="vis-toggle ${isHidden?'':'on'}" onclick="toggleStatVisibility(this,${i})" title="Toggle recruiter visibility">
           ${isHidden ? eyeOff : eyeOpen}
@@ -1889,6 +1938,20 @@ function renderStatsScreen() {
       </div>
     </div>`;
   }).join('');
+}
+
+function updateStatValue(idx, val, isCustom) {
+  val = val.trim();
+  if (!val) return;
+  if (isCustom) {
+    const ci = idx - getActiveStats().length;
+    if (appState.customStats[ci]) appState.customStats[ci].v = val;
+  } else {
+    const stats = getActiveStats();
+    if (stats[idx]) stats[idx].v = val;
+  }
+  saveState();
+  renderOverview();
 }
 
 function renderSportChips() {
@@ -2029,35 +2092,32 @@ function triggerCamera() {
 // ── COLLECTOR ENGINE ──
 function processUpload(file) {
   const uuid = 'u_' + Date.now() + '_' + Math.random().toString(36).slice(2,7);
-  const type = file.type.startsWith('video') ? 'video' : file.type.startsWith('image') ? 'photo' : 'doc';
-  const queueItem = {
-    id: uuid,
-    name: file.name,
-    size: formatBytes(file.size),
-    type,
-    status: 'queued',
-    file
-  };
+  const isPDF = file.type === 'application/pdf' || file.name.endsWith('.pdf');
+  const isCSV = file.type === 'text/csv' || file.name.endsWith('.csv') || file.name.endsWith('.xlsx') || file.name.endsWith('.xls');
+  const type = file.type.startsWith('video') ? 'video' : file.type.startsWith('image') ? 'photo' : isPDF ? 'pdf' : isCSV ? 'csv' : 'doc';
+
+  const queueItem = { id:uuid, name:file.name, size:formatBytes(file.size), type, status:'queued', file, base64:null, thumbDataUrl:null, textContent:null };
   appState.queue.push(queueItem);
 
-  // generate real thumb for photos immediately
   if (type === 'photo') {
     const reader = new FileReader();
     reader.onload = e => {
-      queueItem.thumbDataUrl = e.target.result;
+      const dataUrl = e.target.result;
+      queueItem.thumbDataUrl = dataUrl;
+      // Extract raw base64 (strip data:image/...;base64, prefix)
+      queueItem.base64 = dataUrl.split(',')[1];
       renderQueue();
     };
     reader.readAsDataURL(file);
-  }
-
-  // generate first-frame thumb for video
-  if (type === 'video') {
+  } else if (type === 'pdf' || type === 'csv') {
+    const reader = new FileReader();
+    reader.onload = e => { queueItem.textContent = e.target.result; renderQueue(); };
+    reader.readAsText(file);
+  } else if (type === 'video') {
     const url = URL.createObjectURL(file);
     const video = document.createElement('video');
     video.src = url; video.muted = true; video.playsInline = true;
-    video.addEventListener('loadeddata', () => {
-      video.currentTime = 0.5;
-    });
+    video.addEventListener('loadeddata', () => { video.currentTime = 0.5; });
     video.addEventListener('seeked', () => {
       const canvas = document.createElement('canvas');
       canvas.width = 320; canvas.height = 200;
@@ -2105,33 +2165,70 @@ function renderQueue() {
 
 // ── PRODUCER PIPELINE ──
 async function analyzeMedia(item) {
-  if (!appState.geminiKey) {
-    const mockTags = {
-      video: ['Highlight', 'Game footage'],
-      photo: ['Action shot', 'Game play'],
-      doc:   ['Stats', 'Scoresheet']
-    };
-    return {
-      tags: mockTags[item.type] || ['Media'],
-      visible: true,
-      aiCaption: `${item.type === 'doc' ? 'Scoresheet parsed' : 'AI tagged'} · ${new Date().toLocaleDateString()}`
-    };
+  const mockTags = { video:['Highlight','Game footage'], photo:['Action shot','Game play'], doc:['Stats','Scoresheet'], pdf:['Stats','Scoresheet'], csv:['Stats','Data'] };
+  if (!appState.groqKey) {
+    return { tags: mockTags[item.type]||['Media'], visible:true, aiCaption:`${item.type==='doc'||item.type==='pdf'||item.type==='csv'?'Scoresheet parsed':'AI tagged'} · ${new Date().toLocaleDateString()}`, parsedStats:null };
   }
+
+  // ── PDF / CSV — parse text directly, no vision needed ──
+  if (item.type === 'pdf' || item.type === 'csv') {
+    try {
+      const text = item.textContent || item.name;
+      const prompt = `You are a sports data analyst. Extract athlete stats from this scoresheet data for a ${appState.sport} player named ${appState.athlete.name}.
+Data: """${text.slice(0,2000)}"""
+Return ONLY valid JSON: {"tags":["tag1"],"aiCaption":"one sentence","parsedStats":[{"l":"Stat name","v":"value"}]}
+If no stats found, return parsedStats as empty array.`;
+      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+appState.groqKey},
+        body: JSON.stringify({ model:'llama-3.3-70b-versatile', temperature:0.2, messages:[{role:'user',content:prompt}] })
+      });
+      const data = await res.json();
+      const parsed = JSON.parse((data.choices?.[0]?.message?.content||'{}').replace(/```json|```/g,'').trim());
+      return { tags: parsed.tags||['Scoresheet'], visible:true, aiCaption: parsed.aiCaption||'Scoresheet parsed', parsedStats: parsed.parsedStats||null };
+    } catch(e) { return { tags:['Scoresheet'], visible:true, aiCaption:'Scoresheet parsed', parsedStats:null }; }
+  }
+
+  // ── PHOTO — vision via llama-4-scout ──
+  if (item.type === 'photo' && item.base64) {
+    try {
+      const prompt = `You are analyzing a youth athlete's photo for a ${appState.sport} recruiting profile. Look at the image and:
+1. Identify what sport action or moment is shown
+2. Generate 2-3 relevant tags
+3. Write a short caption (one sentence, sports-marketing energy)
+4. If you can see any stats/numbers on a scoreboard or document, extract them
+
+Return ONLY valid JSON: {"tags":["tag1","tag2"],"aiCaption":"caption here","parsedStats":[{"l":"stat name","v":"value"}]}
+parsedStats should be empty array if no numbers visible.`;
+      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+appState.groqKey},
+        body: JSON.stringify({
+          model:'meta-llama/llama-4-scout-17b-16e-instruct',
+          temperature:0.3,
+          messages:[{role:'user',content:[
+            {type:'text',text:prompt},
+            {type:'image_url',image_url:{url:`data:image/jpeg;base64,${item.base64}`}}
+          ]}]
+        })
+      });
+      const data = await res.json();
+      const parsed = JSON.parse((data.choices?.[0]?.message?.content||'{}').replace(/```json|```/g,'').trim());
+      return { tags: parsed.tags||['Action shot'], visible:true, aiCaption: parsed.aiCaption||'AI tagged', parsedStats: parsed.parsedStats||null };
+    } catch(e) { return { tags:['Action shot'], visible:true, aiCaption:'AI tagged', parsedStats:null }; }
+  }
+
+  // ── VIDEO / other — text-only tagging ──
   try {
-    const prompt = `You are analyzing an athlete's media file for a recruiting profile.
-File: "${item.name}", Type: ${item.type}, Sport: ${appState.sport}, Athlete: ${appState.athlete.name}
-Return ONLY valid JSON with no markdown: {"tags":["tag1","tag2"],"aiCaption":"one short sentence description"}`;
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${appState.geminiKey}`, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ contents:[{ parts:[{ text: prompt }] }] })
+    const prompt = `Tag this athlete media file for a ${appState.sport} recruiting profile.
+File: "${item.name}", Athlete: ${appState.athlete.name}, Sport: ${appState.sport}
+Return ONLY valid JSON: {"tags":["tag1","tag2"],"aiCaption":"one short energetic sentence"}`;
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+appState.groqKey},
+      body: JSON.stringify({ model:'llama-3.3-70b-versatile', temperature:0.4, messages:[{role:'user',content:prompt}] })
     });
     const data = await res.json();
-    const text = (data.candidates?.[0]?.content?.parts?.[0]?.text || '').replace(/```json|```/g,'').trim();
-    const parsed = JSON.parse(text);
-    return { tags: parsed.tags || [], visible: true, aiCaption: parsed.aiCaption || 'AI tagged' };
-  } catch(e) {
-    return { tags: ['Tagged'], visible: true, aiCaption: 'AI tagged' };
-  }
+    const parsed = JSON.parse((data.choices?.[0]?.message?.content||'{}').replace(/```json|```/g,'').trim());
+    return { tags: parsed.tags||['Highlight'], visible:true, aiCaption: parsed.aiCaption||'AI tagged', parsedStats:null };
+  } catch(e) { return { tags:['Highlight'], visible:true, aiCaption:'AI tagged', parsedStats:null }; }
 }
 
 async function runAIPipeline() {
@@ -2139,22 +2236,32 @@ async function runAIPipeline() {
   const btn = document.getElementById('process-btn');
   const origHTML = btn.innerHTML;
   btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:20px;height:20px;animation:spin 1s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Processing...`;
-  btn.style.opacity = '0.7';
-  btn.disabled = true;
+  btn.style.opacity = '0.7'; btn.disabled = true;
 
   appState.queue.forEach(q => q.status = 'processing');
   renderQueue();
 
   for (const item of appState.queue) {
     const analysis = await analyzeMedia(item);
+
+    // Apply any AI-parsed stats into the active stats layer
+    if (analysis.parsedStats && analysis.parsedStats.length > 0) {
+      if (!appState.stats[appState.sport]) appState.stats[appState.sport] = {};
+      if (!appState.stats[appState.sport][appState.season]) {
+        appState.stats[appState.sport][appState.season] = JSON.parse(JSON.stringify(SPORT_STATS[appState.sport] || []));
+      }
+      analysis.parsedStats.forEach(ps => {
+        const existing = appState.stats[appState.sport][appState.season].find(s => s.l.toLowerCase() === ps.l.toLowerCase());
+        if (existing) { existing.v = ps.v; }
+        else { appState.stats[appState.sport][appState.season].push({ l:ps.l, v:ps.v, d:'', dd:'' }); }
+      });
+      showToast(`Parsed ${analysis.parsedStats.length} stat${analysis.parsedStats.length>1?'s':''} from scoresheet`);
+    }
+
     const newMedia = {
-      id: item.id,
-      type: item.type,
-      name: item.name,
-      tag: analysis.aiCaption,
-      tags: analysis.tags,
-      featured: false,
-      visible: analysis.visible,
+      id: item.id, type: item.type, name: item.name,
+      tag: analysis.aiCaption, tags: analysis.tags,
+      featured: false, visible: true, isSelectedForExport: true,
       thumbDataUrl: item.thumbDataUrl || null
     };
     appState.media.unshift(newMedia);
@@ -2166,10 +2273,9 @@ async function runAIPipeline() {
   appState.queue = [];
   renderQueue();
   renderOverview();
+  renderStatsScreen();
   saveState();
-  btn.innerHTML = origHTML;
-  btn.style.opacity = '1';
-  btn.disabled = false;
+  btn.innerHTML = origHTML; btn.style.opacity = '1'; btn.disabled = false;
   showToast('Pipeline complete — ' + appState.media.length + ' items in profile');
 }
 
@@ -2190,8 +2296,8 @@ function toggleMediaVisibility(mediaId, btn) {
 
 function renderShareScreen() {
   const a = appState.athlete;
-  const p = PERSONA_DATA[appState.persona];
-  const stats = (SPORT_STATS[appState.sport]||[]).slice(0,4);
+  const p = PERSONA_DATA[appState.persona] || PERSONA_DATA.grinder;
+  const stats = getActiveStats().filter((_,i)=>!(appState.hiddenStatIndices||[]).includes(i)).slice(0,4);
   document.getElementById('share-name').textContent = a.name;
   document.getElementById('share-meta').textContent = a.position + ' · Class of ' + a.gradYear;
   document.getElementById('share-school').textContent = a.school;
@@ -2219,7 +2325,7 @@ function drawHeroCanvas(canvas, w, h) {
 
 function renderRecruiterView() {
   const a = appState.athlete;
-  const p = PERSONA_DATA[appState.persona];
+  const p = PERSONA_DATA[appState.persona] || PERSONA_DATA.grinder;
   document.getElementById('rv-name').textContent = a.name;
   document.getElementById('rv-meta').textContent = a.school + ' · GPA ' + (a.gpa||'N/A');
   document.getElementById('rv-sport').textContent = appState.sport;
@@ -2229,7 +2335,7 @@ function renderRecruiterView() {
   document.getElementById('rv-persona-sub').textContent = p.sub;
   document.getElementById('rv-narrative-text').textContent = p.preview;
   document.getElementById('rv-persona-attr').textContent = p.name;
-  const stats = (SPORT_STATS[appState.sport]||[]).filter((_,i)=>i<4);
+  const stats = getActiveStats().filter((_,i)=>!(appState.hiddenStatIndices||[]).includes(i)).slice(0,4);
   document.getElementById('rv-stat-grid').innerHTML = stats.map(s=>`<div class="rv-sc"><div class="rv-sv">${s.v}</div><div class="rv-sl">${s.l}</div></div>`).join('');
   const visMedia = appState.media.filter(m=>m.visible).slice(0,4);
   document.getElementById('rv-media-grid').innerHTML = visMedia.map(m=>`
@@ -2239,6 +2345,19 @@ function renderRecruiterView() {
       ${m.featured?'<div class="media-featured-badge">Featured</div>':''}
       <div class="media-info"><div class="media-name">${m.name}</div><div class="media-tag">${(m.tags||[]).join(' · ')||m.tag||''}</div></div>
     </div>`).join('');
+  // Schedule
+  const schedEl = document.getElementById('rv-schedule');
+  if (schedEl) {
+    const upcoming = (appState.schedule||[]).slice(0,7);
+    schedEl.style.display = upcoming.length ? 'block' : 'none';
+    schedEl.innerHTML = upcoming.length ? `
+      <div class="section-label" style="margin-bottom:8px;">Upcoming games</div>
+      ${upcoming.map(g=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--border);">
+          <div style="background:var(--teal);color:#fff;border-radius:6px;padding:4px 8px;font-family:var(--font-head);font-size:13px;font-weight:600;flex-shrink:0;">${g.date||'TBD'}</div>
+          <div><div style="font-size:13px;font-weight:500;color:var(--text1);">${g.opponent||g.name||'Game'}</div><div style="font-size:11px;color:var(--text3);">${[g.time,g.location].filter(Boolean).join(' · ')}</div></div>
+        </div>`).join('')}` : '';
+  }
 }
 
 // ── SVG PLACEHOLDER LIBRARY ──
@@ -2337,13 +2456,13 @@ function showConfirm(title, body, onConfirm, btnLabel) {
 
 function editApiKey() {
   editField(
-    'Gemini API key', 'text',
-    appState.geminiKey || '',
-    'Get a free key at ai.google.dev — starts with AIza',
+    'Groq API key', 'text',
+    appState.groqKey || '',
+    'Get a free key at console.groq.com — starts with gsk_',
     val => {
-      appState.geminiKey = val;
-      localStorage.setItem('db_api_key', btoa(val));
-      document.getElementById('settings-key-display').textContent = val ? 'AIza••••••••' + val.slice(-4) : 'Not set';
+      appState.groqKey = val.trim();
+      localStorage.setItem('db_api_key', btoa(val.trim()));
+      document.getElementById('settings-key-display').textContent = val ? 'gsk_••••••••' + val.slice(-4) : 'Not set';
       saveState();
       showToast('API key saved');
     }
@@ -2556,10 +2675,7 @@ function exportPDF() {
 function exportPNG() {
   const a = appState.athlete;
   const p = PERSONA_DATA[appState.persona] || PERSONA_DATA.grinder;
-  const stats = (SPORT_STATS[appState.sport]||[]).filter(s=>{
-    const idx = (SPORT_STATS[appState.sport]||[]).indexOf(s);
-    return !(appState.hiddenStatIndices||[]).includes(idx);
-  }).slice(0,4);
+  const stats = getActiveStats().filter((_,i)=>!(appState.hiddenStatIndices||[]).includes(i)).slice(0,4);
 
   const W = 1080, H = 1080;
   const canvas = document.createElement('canvas');
@@ -2663,7 +2779,82 @@ function editSchool() { editAthleteField('school', 'School / team', 'School, clu
 
 function handleLogoUpload(e) {
   const f = e.target.files[0]; if (!f) return;
-  showToast('Team logo uploaded');
+  const reader = new FileReader();
+  reader.onload = ev => {
+    appState.athlete.logoDataUrl = ev.target.result;
+    // Update avatar if it exists
+    const av = document.getElementById('ov-avatar');
+    if (av) { av.innerHTML = `<img src="${ev.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="logo"/>`; }
+    saveState();
+    showToast('Team logo saved');
+  };
+  reader.readAsDataURL(f);
+}
+
+// ── SCHEDULE ──
+function addScheduleGame() {
+  const events = appState.schedule || [];
+  const today = new Date().toISOString().slice(0,10);
+  editField('Opponent / event name', 'text', '', 'e.g. Westview High, Regional Championship', name => {
+    if (!name) return;
+    editField('Date', 'date', today, 'When is the game?', date => {
+      editField('Time', 'text', '', 'e.g. 3:30 PM', time => {
+        editField('Location', 'text', '', 'Field name or address', loc => {
+          const game = { id:'g'+Date.now(), name, date, time, location:loc };
+          if (!appState.schedule) appState.schedule = [];
+          appState.schedule.push(game);
+          appState.schedule.sort((a,b) => (a.date||'') < (b.date||'') ? -1 : 1);
+          renderScheduleList();
+          saveState();
+          showToast('Game added');
+        });
+      });
+    });
+  });
+}
+
+function deleteScheduleGame(id) {
+  appState.schedule = (appState.schedule||[]).filter(g => g.id !== id);
+  renderScheduleList();
+  saveState();
+}
+
+function renderScheduleList() {
+  const el = document.getElementById('schedule-list');
+  if (!el) return;
+  const games = appState.schedule || [];
+  el.innerHTML = games.length === 0
+    ? `<div style="padding:14px;text-align:center;font-size:13px;color:var(--text3);">No games yet — tap Add game</div>`
+    : games.map(g => `
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--border);">
+          <div style="background:var(--teal);color:#fff;border-radius:6px;padding:4px 8px;font-family:var(--font-head);font-size:13px;font-weight:600;flex-shrink:0;min-width:68px;text-align:center;">${g.date||'TBD'}</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:500;color:var(--text1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${g.name}</div>
+            <div style="font-size:11px;color:var(--text3);">${[g.time,g.location].filter(Boolean).join(' · ')}</div>
+          </div>
+          <button onclick="deleteScheduleGame('${g.id}')" style="background:none;border:none;cursor:pointer;padding:4px;color:var(--text3);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:16px;height:16px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+          </button>
+        </div>`).join('');
+}
+
+// ── GROQ KEY TEST ──
+async function testGroqKey() {
+  const key = appState.groqKey;
+  if (!key) { showToast('Enter your Groq API key first'); return; }
+  const btn = document.getElementById('test-key-btn');
+  const orig = btn.textContent;
+  btn.textContent = 'Testing...'; btn.disabled = true;
+  try {
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+      body: JSON.stringify({ model:'llama-3.3-70b-versatile', max_tokens:5, messages:[{role:'user',content:'Hi'}] })
+    });
+    if (res.ok) { showToast('✓ Groq key is valid'); btn.textContent = '✓ Valid'; btn.style.color = 'var(--teal)'; }
+    else { showToast('✗ Key invalid — check and retry'); btn.textContent = '✗ Invalid'; btn.style.color = 'var(--red-mid)'; }
+  } catch(e) { showToast('Connection error — check network'); btn.textContent = 'Error'; }
+  setTimeout(() => { btn.textContent = orig; btn.disabled = false; btn.style.color = ''; }, 3000);
 }
 
 function setAccent(color, dark, el) {
@@ -2677,7 +2868,7 @@ function setAccent(color, dark, el) {
 }
 
 function exportVault() {
-  const { geminiKey, ...safe } = appState;
+  const { groqKey, ...safe } = appState;
   const blob = new Blob([JSON.stringify(safe, null, 2)], { type:'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
