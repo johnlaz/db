@@ -12,6 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
 <style>
 :root {
   --teal:       #378ADD;
@@ -422,21 +423,34 @@ textarea.input-field { resize: vertical; min-height: 80px; }
 /* ── PDF PRINT STYLES ── */
 @media print {
   * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-  body { background:#fff !important; overflow:visible !important; height:auto !important; }
-  #app { height:auto !important; overflow:visible !important; max-width:100% !important; }
+  html, body { background:#fff !important; overflow:visible !important; height:auto !important; min-height:unset !important; }
+  #app { height:auto !important; overflow:visible !important; max-width:100% !important; display:block !important; }
   #topbar, #tabbar, .modal-overlay, .intro-overlay, .leave-overlay,
   #recruiter-view .rv-topbar, #recruiter-view .rv-footer,
   .media-vis-toggle, .vis-toggle { display:none !important; }
-  #recruiter-view { position:static !important; display:block !important; overflow:visible !important; background:#fff !important; }
-  .rv-hero { background:#1A2850 !important; padding:28px 24px 24px !important; }
-  .rv-name { font-size:36px !important; }
-  .rv-body { padding:24px !important; }
-  .rv-stat-grid { grid-template-columns:repeat(4,1fr) !important; }
-  .rv-sc { border:1px solid #e0e0e0 !important; }
-  .rv-narrative { background:#f5f5f2 !important; border:1px solid #e0e0e0 !important; }
+  #recruiter-view {
+    position:static !important; display:block !important;
+    overflow:visible !important; background:#fff !important;
+    width:100% !important; height:auto !important; transform:none !important;
+  }
+  .rv-hero { background:#1A2850 !important; padding:32px 32px 28px !important; }
+  .rv-name { font-size:40px !important; letter-spacing:-0.5px !important; }
+  .rv-meta-line { font-size:14px !important; margin-top:6px !important; }
+  .rv-pills { margin-top:10px !important; }
+  .rv-persona-strip { margin-top:14px !important; }
+  .rv-body { padding:28px 32px !important; }
+  .rv-stat-grid { grid-template-columns:repeat(4,1fr) !important; gap:12px !important; }
+  .rv-sc { border:1px solid #ddd !important; border-radius:10px !important; padding:14px !important; }
+  .rv-sv { font-size:30px !important; }
+  .rv-sl { font-size:12px !important; }
+  .rv-media-grid { grid-template-columns:repeat(3,1fr) !important; }
+  .rv-narrative { background:#f8f8f6 !important; border:1px solid #e8e8e4 !important; border-radius:12px !important; }
+  .rv-nar-text { font-size:13px !important; line-height:1.7 !important; }
+  .section-label { color:#9A9A94 !important; }
   .print-header { display:flex !important; }
   .print-footer { display:block !important; }
   .screen, #main { display:none !important; }
+  @page { margin:0.6in 0.5in; size:letter portrait; }
 }
 .print-header { display:none; background:var(--teal-dark); padding:16px 24px; align-items:center; justify-content:space-between; }
 .print-footer { display:none; padding:16px 24px; text-align:center; font-size:11px; color:var(--text3); border-top:0.5px solid var(--border); }
@@ -472,7 +486,9 @@ textarea.input-field { resize: vertical; min-height: 80px; }
 
   <!-- TOPBAR -->
   <div id="topbar">
-    <div class="topbar-logo">Draft<span>Bound</span></div>
+    <div class="topbar-logo">
+      <img src="assets/icon-192.png" alt="DraftBound" style="height:28px;width:28px;object-fit:contain;border-radius:6px;vertical-align:middle;margin-right:7px;" onerror="this.style.display='none'"/>Draft<span>Bound</span>
+    </div>
     <div class="topbar-actions">
       <button class="icon-btn" onclick="openRecruiterView()" title="Recruiter view">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -550,7 +566,7 @@ textarea.input-field { resize: vertical; min-height: 80px; }
         <div class="drop-zone-title">Drop media here</div>
         <div class="drop-zone-sub">Photos, videos, scoresheets, PDFs, or CSV/Excel — saves offline first</div>
       </div>
-      <input type="file" id="file-input" multiple accept="image/*,video/*,.pdf,.csv,.xlsx,.xls" style="display:none" onchange="handleFileSelect(event)"/>
+      <input type="file" id="file-input" multiple accept="image/*,video/*,.pdf,.csv,.xlsx,.xls,.heic,.heif" style="display:none" onchange="handleFileSelect(event)"/>
 
       <div class="section-label">Quick add</div>
       <div class="ingest-types">
@@ -1008,8 +1024,11 @@ textarea.input-field { resize: vertical; min-height: 80px; }
   <!-- RECRUITER VIEW -->
   <div class="rv-wrap" id="recruiter-view">
     <div class="print-header">
-      <div style="font-family:var(--font-head);font-size:18px;font-weight:700;color:var(--teal-soft);">DraftBound</div>
-      <div style="font-size:11px;color:var(--teal-soft);" id="print-url-header">draftbound.app</div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <img src="assets/icon-192.png" style="height:28px;width:28px;object-fit:contain;border-radius:5px;" onerror="this.style.display='none'"/>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;color:#fff;letter-spacing:0.3px;">DraftBound</span>
+      </div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.55);" id="print-url-header">draftbound.app</div>
     </div>
     <div class="rv-topbar">
       <div class="rv-brand">DraftBound · Recruiter View</div>
@@ -1401,7 +1420,7 @@ Respond with ONLY valid JSON, no markdown:
     const parsed = JSON.parse(text);
     showWizResult(parsed.name, parsed.narrative);
   } catch(e) {
-    showWizResult('The ' + appState.athlete.name.split(' ')[0], `${appState.athlete.name} is a ${appState.sport} ${appState.athlete.position} whose ${wizAnswers.style.toLowerCase()} sets them apart. ${wizAnswers.coaches}. A profile built for the programs that know what they want.`);
+    showWizResult('The ' + (appState.athlete.name||'Athlete').split(' ')[0], `${appState.athlete.name||'This athlete'} is a ${appState.sport} ${appState.athlete.position} whose ${wizAnswers.style.toLowerCase()} sets them apart. ${wizAnswers.coaches}. A profile built for the programs that know what they want.`);
   }
 }
 
@@ -1858,11 +1877,17 @@ function navigateTo(tab) {
 
 function renderOverview() {
   const a = appState.athlete;
-  const p = PERSONA_DATA[appState.persona];
+  const p = PERSONA_DATA[appState.persona] || PERSONA_DATA.grinder;
   document.getElementById('ov-persona-name').textContent = p.name;
   document.getElementById('ov-persona-sub').textContent = appState.sport + ' · ' + a.position + ' · Class of ' + a.gradYear;
-  document.getElementById('ov-persona-icon').innerHTML = PERSONA_ICONS[p.icon].replace('<svg','<svg width="26" height="26"').slice(PERSONA_ICONS[p.icon].indexOf('>'));
-  document.getElementById('ov-avatar').textContent = a.initials || a.name.split(' ').map(n=>n[0]).join('').slice(0,2);
+  const iconSVG = PERSONA_ICONS[p.icon] || PERSONA_ICONS.flame;
+  document.getElementById('ov-persona-icon').innerHTML = iconSVG.replace('<svg','<svg width="26" height="26"').slice(iconSVG.indexOf('>'));
+  const av = document.getElementById('ov-avatar');
+  if (a.logoDataUrl) {
+    av.innerHTML = `<img src="${a.logoDataUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="logo"/>`;
+  } else {
+    av.textContent = a.initials || (a.name||'?').split(' ').map(n=>n[0]).join('').slice(0,2);
+  }
   document.getElementById('ov-athlete-name').textContent = a.name;
   document.getElementById('ov-athlete-meta').textContent = a.school + (a.gpa ? ' · GPA ' + a.gpa : '');
   document.getElementById('ov-sport-pill').textContent = appState.sport;
@@ -1888,9 +1913,9 @@ function renderOverview() {
     </div>`).join('');
 
   const mediaGrid = document.getElementById('ov-media-grid');
-  const visibleMedia = appState.media.filter(m=>m.visible).slice(0,4);
+  const visibleMedia = appState.media.filter(m=>m.visible);
   mediaGrid.innerHTML = visibleMedia.map(m => `
-    <div class="media-thumb ${m.featured?'featured':''}">
+    <div class="media-thumb ${m.featured?'featured':''} ${m.visible?'':'hidden'}">
       ${mediaThumbHTML(m)}
       ${m.type==='video'?`<div class="media-play"><div class="media-play-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor"/></svg></div></div>`:''}
       ${m.featured?'<div class="media-featured-badge">Featured</div>':''}
@@ -2040,7 +2065,8 @@ function renderPersonaOptions() {
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
       </div>
     </div>`).join('');
-  document.getElementById('persona-preview-text').textContent = PERSONA_DATA[appState.persona].preview;
+  const currentP = PERSONA_DATA[appState.persona] || PERSONA_DATA.grinder;
+  document.getElementById('persona-preview-text').textContent = currentP.preview;
 }
 
 function selectPersona(key, el) {
@@ -2092,23 +2118,33 @@ function triggerCamera() {
 // ── COLLECTOR ENGINE ──
 function processUpload(file) {
   const uuid = 'u_' + Date.now() + '_' + Math.random().toString(36).slice(2,7);
-  const isPDF = file.type === 'application/pdf' || file.name.endsWith('.pdf');
-  const isCSV = file.type === 'text/csv' || file.name.endsWith('.csv') || file.name.endsWith('.xlsx') || file.name.endsWith('.xls');
-  const type = file.type.startsWith('video') ? 'video' : file.type.startsWith('image') ? 'photo' : isPDF ? 'pdf' : isCSV ? 'csv' : 'doc';
+  const lname = file.name.toLowerCase();
+  const isPDF  = file.type === 'application/pdf'  || lname.endsWith('.pdf');
+  const isCSV  = file.type === 'text/csv' || ['csv','xlsx','xls'].some(e => lname.endsWith('.'+e));
+  const isHEIC = file.type === 'image/heic' || file.type === 'image/heif' ||
+                 lname.endsWith('.heic') || lname.endsWith('.heif');
+  const type = file.type.startsWith('video') ? 'video'
+             : (file.type.startsWith('image') || isHEIC) ? 'photo'
+             : isPDF ? 'pdf' : isCSV ? 'csv' : 'doc';
 
   const queueItem = { id:uuid, name:file.name, size:formatBytes(file.size), type, status:'queued', file, base64:null, thumbDataUrl:null, textContent:null };
   appState.queue.push(queueItem);
+  renderQueue();
 
   if (type === 'photo') {
-    const reader = new FileReader();
-    reader.onload = e => {
-      const dataUrl = e.target.result;
-      queueItem.thumbDataUrl = dataUrl;
-      // Extract raw base64 (strip data:image/...;base64, prefix)
-      queueItem.base64 = dataUrl.split(',')[1];
+    if (isHEIC && typeof heic2any !== 'undefined') {
+      queueItem.status = 'converting';
       renderQueue();
-    };
-    reader.readAsDataURL(file);
+      heic2any({ blob: file, toType: 'image/jpeg', quality: 0.82 })
+        .then(jpegBlob => {
+          const converted = new File([jpegBlob], lname.replace(/\.hei[cf]$/, '.jpg'), { type: 'image/jpeg' });
+          queueItem.status = 'queued';
+          generatePhotoThumb(converted, queueItem);
+        })
+        .catch(() => { queueItem.status = 'queued'; generatePhotoThumb(file, queueItem); });
+    } else {
+      generatePhotoThumb(file, queueItem);
+    }
   } else if (type === 'pdf' || type === 'csv') {
     const reader = new FileReader();
     reader.onload = e => { queueItem.textContent = e.target.result; renderQueue(); };
@@ -2119,17 +2155,41 @@ function processUpload(file) {
     video.src = url; video.muted = true; video.playsInline = true;
     video.addEventListener('loadeddata', () => { video.currentTime = 0.5; });
     video.addEventListener('seeked', () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = 320; canvas.height = 200;
-      canvas.getContext('2d').drawImage(video, 0, 0, 320, 200);
-      queueItem.thumbDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+      const c = document.createElement('canvas');
+      c.width = 320; c.height = 200;
+      c.getContext('2d').drawImage(video, 0, 0, 320, 200);
+      queueItem.thumbDataUrl = c.toDataURL('image/jpeg', 0.7);
       URL.revokeObjectURL(url);
       renderQueue();
     });
     video.load();
   }
+}
 
-  renderQueue();
+function generatePhotoThumb(file, queueItem) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new window.Image();
+    img.onload = () => {
+      const MAX = 480;
+      const scale = img.width > MAX ? MAX / img.width : 1;
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.width * scale);
+      c.height = Math.round(img.height * scale);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      const dataUrl = c.toDataURL('image/jpeg', 0.72);
+      queueItem.thumbDataUrl = dataUrl;
+      queueItem.base64 = dataUrl.split(',')[1];
+      renderQueue();
+    };
+    img.onerror = () => {
+      queueItem.thumbDataUrl = null;
+      queueItem.base64 = null;
+      renderQueue();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
 }
 
 function formatBytes(b) {
@@ -2369,8 +2429,9 @@ const SVG_PLACEHOLDERS = {
 };
 
 function mediaThumbHTML(m) {
+  const imgStyle = 'width:100%;aspect-ratio:16/10;object-fit:contain;display:block;background:#1a1a18;';
   const svg = m.thumbDataUrl
-    ? `<img src="${m.thumbDataUrl}" style="width:100%;aspect-ratio:16/10;object-fit:cover;display:block;" alt="${m.name}"/>`
+    ? `<img src="${m.thumbDataUrl}" style="${imgStyle}" alt="${m.name}"/>`
     : `<div style="width:100%;aspect-ratio:16/10;overflow:hidden;">${SVG_PLACEHOLDERS[m.type] || SVG_PLACEHOLDERS.await}</div>`;
   return svg;
 }
@@ -2671,89 +2732,233 @@ function exportPDF() {
   }, 150);
 }
 
-// ── PNG EXPORT CARD ──
+// ── PNG EXPORT CARD — async image-aware premium design ──
 function exportPNG() {
   const a = appState.athlete;
   const p = PERSONA_DATA[appState.persona] || PERSONA_DATA.grinder;
   const stats = getActiveStats().filter((_,i)=>!(appState.hiddenStatIndices||[]).includes(i)).slice(0,4);
+  const accent = appState.accentColor || '#378ADD';
+  const dark   = appState.accentDark  || '#1A2850';
 
+  // Load all images first, then draw
+  const imageJobs = [];
+  const actionMedia = appState.media.find(m => m.thumbDataUrl && m.type === 'photo' && m.visible);
+  if (actionMedia) {
+    imageJobs.push(loadImg(actionMedia.thumbDataUrl).then(img => ({ key:'action', img })).catch(()=>null));
+  }
+  if (a.logoDataUrl) {
+    imageJobs.push(loadImg(a.logoDataUrl).then(img => ({ key:'logo', img })).catch(()=>null));
+  }
+
+  showToast('Generating card...');
+  Promise.all(imageJobs).then(results => {
+    const loaded = {};
+    results.forEach(r => { if (r) loaded[r.key] = r.img; });
+    drawPNGCard(a, p, stats, accent, dark, loaded);
+  });
+}
+
+function loadImg(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+
+function drawPNGCard(a, p, stats, accent, dark, loaded) {
   const W = 1080, H = 1080;
   const canvas = document.createElement('canvas');
   canvas.width = W; canvas.height = H;
   const ctx = canvas.getContext('2d');
 
-  // Background
-  ctx.fillStyle = '#085041'; ctx.fillRect(0,0,W,H);
-  ctx.fillStyle = '#0F6E56';
-  for (let i=0;i<5;i++){ctx.beginPath();ctx.arc(W*0.18*i+50,H*0.4,H*0.5,0,Math.PI*2);ctx.fill();}
-  ctx.fillStyle='rgba(255,255,255,0.03)';
-  for(let x=0;x<W;x+=36){ctx.fillRect(x,0,18,H);}
-
-  // Top brand strip
-  ctx.fillStyle='rgba(0,0,0,0.25)'; ctx.fillRect(0,0,W,80);
-  ctx.fillStyle='#9FE1CB'; ctx.font='500 28px DM Sans,sans-serif';
-  ctx.fillText('DRAFTBOUND', 40, 52);
-  ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.font='22px DM Sans,sans-serif';
-  ctx.textAlign='right'; ctx.fillText('Career Launchpad', W-40, 52); ctx.textAlign='left';
-
-  // Athlete name
-  ctx.fillStyle='#fff'; ctx.font='700 96px "Barlow Condensed",sans-serif';
-  ctx.fillText((a.name||'Athlete').toUpperCase(), 40, 220);
-
-  // Meta row
-  ctx.fillStyle='#9FE1CB'; ctx.font='500 34px DM Sans,sans-serif';
-  ctx.fillText([appState.sport, a.position, a.gradYear?'Class of '+a.gradYear:''].filter(Boolean).join('  ·  '), 40, 278);
-
-  // Persona badge
-  ctx.fillStyle='rgba(255,255,255,0.12)';
-  roundRect(ctx, 40, 310, 380, 68, 16);
-  ctx.fill();
-  ctx.fillStyle='#EF9F27'; ctx.font='500 30px DM Sans,sans-serif';
-  ctx.fillText('⚡ ' + p.name, 70, 352);
-
-  // School
-  if (a.school) {
-    ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.font='26px DM Sans,sans-serif';
-    ctx.fillText(a.school + (a.gpa ? '  ·  GPA ' + a.gpa : ''), 40, 420);
+  function glassCard(x, y, w, h, r, fillAlpha, strokeAlpha) {
+    roundRect(ctx, x, y, w, h, r);
+    ctx.fillStyle = hexToRgba(accent, fillAlpha); ctx.fill();
+    ctx.strokeStyle = hexToRgba('#ffffff', strokeAlpha); ctx.lineWidth = 1;
+    roundRect(ctx, x, y, w, h, r); ctx.stroke();
   }
 
-  // Stats grid
-  const statBoxW = 220, statBoxH = 140, statCols = 2;
-  const statsY = 480;
-  stats.forEach((s,i) => {
-    const col = i % statCols, row = Math.floor(i / statCols);
-    const x = 40 + col*(statBoxW+20), y = statsY + row*(statBoxH+16);
-    ctx.fillStyle='rgba(255,255,255,0.1)';
-    roundRect(ctx,x,y,statBoxW,statBoxH,14); ctx.fill();
-    ctx.fillStyle='#fff'; ctx.font='700 64px "Barlow Condensed",sans-serif';
-    ctx.fillText(s.v, x+20, y+78);
-    ctx.fillStyle='rgba(255,255,255,0.6)'; ctx.font='24px DM Sans,sans-serif';
-    ctx.fillText(s.l, x+20, y+112);
-    if (s.d==='up') { ctx.fillStyle='#5DCAA5'; ctx.fillText('▲ '+s.dd, x+20, y+136); }
-    else if (s.d==='dn') { ctx.fillStyle='#F0997B'; ctx.fillText('▼ '+s.dd, x+20, y+136); }
+  // ── BACKGROUND ──
+  const bgGrd = ctx.createLinearGradient(0, 0, W * 0.6, H);
+  bgGrd.addColorStop(0, dark);
+  bgGrd.addColorStop(1, shadeHex(dark, -28));
+  ctx.fillStyle = bgGrd; ctx.fillRect(0, 0, W, H);
+
+  // Dot matrix texture
+  ctx.fillStyle = 'rgba(255,255,255,0.014)';
+  for (let x = 0; x < W; x += 8) {
+    for (let y = 0; y < H; y += 8) {
+      ctx.fillRect(x, y, 1.5, 1.5);
+    }
+  }
+
+  // ── ACTION PHOTO — right half with blend ──
+  if (loaded.action) {
+    const img = loaded.action;
+    const ph = H, pw = W * 0.52;
+    const px = W - pw;
+    const scale = Math.max(pw / img.naturalWidth, ph / img.naturalHeight);
+    const sw = img.naturalWidth * scale, sh = img.naturalHeight * scale;
+    const sx = px + (pw - sw) / 2, sy = (ph - sh) / 2;
+    ctx.save();
+    ctx.globalAlpha = 0.5;
+    ctx.drawImage(img, sx, sy, sw, sh);
+    ctx.restore();
+    // Gradient mask — fade photo into background
+    const mask = ctx.createLinearGradient(px - 80, 0, px + 260, 0);
+    mask.addColorStop(0, dark + 'ff');
+    mask.addColorStop(0.4, dark + 'cc');
+    mask.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = mask; ctx.fillRect(0, 0, W, H);
+    // Bottom fade
+    const botMask = ctx.createLinearGradient(0, H - 300, 0, H);
+    botMask.addColorStop(0, 'rgba(0,0,0,0)');
+    botMask.addColorStop(1, dark + 'ee');
+    ctx.fillStyle = botMask; ctx.fillRect(0, H - 300, W, 300);
+  }
+
+  // ── AMBIENT GLOW ──
+  const orb1 = ctx.createRadialGradient(60, 60, 0, 60, 60, 420);
+  orb1.addColorStop(0, hexToRgba(accent, 0.25));
+  orb1.addColorStop(0.6, hexToRgba(accent, 0.06));
+  orb1.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = orb1; ctx.fillRect(0, 0, W, H);
+
+  const orb2 = ctx.createRadialGradient(W, H, 0, W, H, 350);
+  orb2.addColorStop(0, 'rgba(239,159,39,0.15)');
+  orb2.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = orb2; ctx.fillRect(0, 0, W, H);
+
+  // ── TOP BAR ──
+  const topBarGrd = ctx.createLinearGradient(0,0,0,72);
+  topBarGrd.addColorStop(0,'rgba(0,0,0,0.45)');
+  topBarGrd.addColorStop(1,'rgba(0,0,0,0.1)');
+  ctx.fillStyle = topBarGrd; ctx.fillRect(0,0,W,72);
+  ctx.strokeStyle = hexToRgba(accent, 0.45); ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(0,72); ctx.lineTo(W,72); ctx.stroke();
+  ctx.textAlign = 'left';
+  ctx.fillStyle = accent; ctx.font = '700 22px "Barlow Condensed",sans-serif';
+  ctx.fillText('DRAFTBOUND', 40, 47);
+  ctx.fillStyle = 'rgba(255,255,255,0.28)'; ctx.font = '400 17px "DM Sans",sans-serif';
+  ctx.textAlign = 'right';
+  ctx.fillText(appState.sport.toUpperCase() + '  ·  CAREER LAUNCHPAD', W - 40, 47);
+
+  // ── LOGO circle (if present) ──
+  let nameX = 54, accentBarH = 130;
+  if (loaded.logo) {
+    ctx.save();
+    ctx.beginPath(); ctx.arc(78, 155, 36, 0, Math.PI * 2); ctx.clip();
+    ctx.drawImage(loaded.logo, 42, 119, 72, 72);
+    ctx.restore();
+    ctx.strokeStyle = accent; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.arc(78, 155, 37, 0, Math.PI * 2); ctx.stroke();
+    nameX = 132;
+    accentBarH = 118;
+  }
+
+  // ── ACCENT BAR ──
+  const barGrd = ctx.createLinearGradient(40, 100, 40, 100 + accentBarH);
+  barGrd.addColorStop(0, accent);
+  barGrd.addColorStop(1, hexToRgba(accent, 0.3));
+  ctx.fillStyle = barGrd; ctx.fillRect(40, 100, 5, accentBarH);
+
+  // ── ATHLETE NAME ──
+  ctx.textAlign = 'left';
+  ctx.shadowColor = 'rgba(0,0,0,0.7)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 3;
+  const nameUpper = (a.name || 'ATHLETE').toUpperCase();
+  let fs = 104; ctx.font = '800 ' + fs + 'px "Barlow Condensed",sans-serif';
+  const maxW = W - nameX - 60;
+  while (ctx.measureText(nameUpper).width > maxW && fs > 48) { fs -= 3; ctx.font = '800 ' + fs + 'px "Barlow Condensed",sans-serif'; }
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText(nameUpper, nameX, loaded.logo ? 178 : 192);
+  ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+
+  // ── META ──
+  ctx.fillStyle = hexToRgba(accent, 1); ctx.font = '600 30px "Barlow Condensed",sans-serif';
+  const metaY = loaded.logo ? 218 : 236;
+  ctx.fillText([appState.sport, a.position, a.gradYear ? 'Class of ' + a.gradYear : ''].filter(Boolean).join('  ·  '), nameX, metaY);
+
+  // ── PERSONA PILL ──
+  ctx.font = '600 22px "DM Sans",sans-serif';
+  const badgeTxt = '⚡  ' + p.name;
+  const bW = ctx.measureText(badgeTxt).width + 52, bH = 48, bY = metaY + 16;
+  glassCard(nameX, bY, bW, bH, 24, 0.13, 0.22);
+  ctx.fillStyle = '#EF9F27'; ctx.fillText(badgeTxt, nameX + 18, bY + 31);
+
+  // ── SCHOOL ──
+  ctx.fillStyle = 'rgba(255,255,255,0.48)'; ctx.font = '400 22px "DM Sans",sans-serif';
+  ctx.fillText([a.school, a.gpa ? 'GPA ' + a.gpa : ''].filter(Boolean).join('  ·  '), nameX, bY + 74);
+
+  // ── DIVIDER ──
+  const divY = bY + 96;
+  const divGrd = ctx.createLinearGradient(54, 0, W - 54, 0);
+  divGrd.addColorStop(0, accent); divGrd.addColorStop(0.4, hexToRgba(accent, 0.3)); divGrd.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.strokeStyle = divGrd; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(54, divY); ctx.lineTo(W - 54, divY); ctx.stroke();
+
+  // ── STAT CARDS ──
+  const sY = divY + 20, sH = stats.length > 2 ? 132 : 155, sW = (W - 108 - 18) / 2;
+  stats.forEach((s, i) => {
+    const col = i % 2, row = Math.floor(i / 2);
+    const x = 54 + col * (sW + 18), y = sY + row * (sH + 14);
+    glassCard(x, y, sW, sH, 14, 0.1, 0.14);
+    // Top accent stripe
+    ctx.fillStyle = accent; ctx.fillRect(x + 16, y, 36, 3);
+    ctx.fillStyle = '#fff'; ctx.font = '700 66px "Barlow Condensed",sans-serif';
+    ctx.textAlign = 'left'; ctx.fillText(s.v, x + 18, y + 70);
+    ctx.fillStyle = 'rgba(255,255,255,0.48)'; ctx.font = '400 19px "DM Sans",sans-serif';
+    ctx.fillText(s.l, x + 18, y + 98);
+    if (s.d === 'up') { ctx.fillStyle = '#4DD9A5'; ctx.font = '500 17px "DM Sans",sans-serif'; ctx.fillText('▲ ' + s.dd, x + 18, y + 120); }
+    else if (s.d === 'dn') { ctx.fillStyle = '#FF8080'; ctx.font = '500 17px "DM Sans",sans-serif'; ctx.fillText('▼ ' + s.dd, x + 18, y + 120); }
   });
 
-  // Narrative
-  const narY = statsY + (Math.ceil(stats.length/2))*(statBoxH+16) + 30;
-  ctx.fillStyle='rgba(0,0,0,0.3)'; roundRect(ctx,40,narY,W-80,160,16); ctx.fill();
-  ctx.fillStyle='rgba(255,255,255,0.8)'; ctx.font='26px DM Sans,sans-serif';
-  wrapText(ctx, p.preview, 70, narY+42, W-140, 38);
+  // ── NARRATIVE ──
+  const narY = sY + Math.ceil(stats.length / 2) * (sH + 14) + 16;
+  const narH = H - narY - 72;
+  if (narH > 50) {
+    glassCard(54, narY, W - 108, narH, 16, 0.07, 0.1);
+    ctx.fillStyle = hexToRgba(accent, 0.35);
+    roundRect(ctx, 54, narY, W - 108, 3, 0); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.78)'; ctx.font = '400 22px "DM Sans",sans-serif';
+    ctx.textAlign = 'left'; wrapText(ctx, p.preview, 74, narY + 34, W - 148, 30);
+    ctx.fillStyle = hexToRgba(accent, 0.55); ctx.font = '400 15px "DM Sans",sans-serif';
+    ctx.fillText('★  AI-generated · ' + p.name, 74, narY + narH - 16);
+  }
 
-  // Footer
-  ctx.fillStyle='rgba(0,0,0,0.3)'; ctx.fillRect(0,H-80,W,80);
-  ctx.fillStyle='#9FE1CB'; ctx.font='26px DM Sans,sans-serif'; ctx.textAlign='left';
-  ctx.fillText(recruiterUrl(), 40, H-28);
-  ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.font='22px DM Sans,sans-serif'; ctx.textAlign='right';
-  ctx.fillText(new Date().getFullYear()+ ' · DraftBound', W-40, H-28);
+  // ── FOOTER ──
+  const footGrd = ctx.createLinearGradient(0, H - 68, 0, H);
+  footGrd.addColorStop(0, 'rgba(0,0,0,0.2)'); footGrd.addColorStop(1, 'rgba(0,0,0,0.5)');
+  ctx.fillStyle = footGrd; ctx.fillRect(0, H - 68, W, 68);
+  ctx.strokeStyle = hexToRgba(accent, 0.25); ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(0, H - 68); ctx.lineTo(W, H - 68); ctx.stroke();
+  ctx.fillStyle = hexToRgba(accent, 0.85); ctx.font = '400 18px "DM Sans",sans-serif';
+  ctx.textAlign = 'left'; ctx.fillText(recruiterUrl(), 40, H - 22);
+  ctx.fillStyle = 'rgba(255,255,255,0.22)'; ctx.font = '400 16px "DM Sans",sans-serif';
+  ctx.textAlign = 'right'; ctx.fillText(new Date().getFullYear() + '  ·  DraftBound', W - 40, H - 22);
 
   try {
     const link = document.createElement('a');
-    const fname = (a.name||'athlete').toLowerCase().replace(/\s+/g,'-');
-    link.download = 'draftbound-' + fname + '-card.png';
+    link.download = 'draftbound-' + (a.name||'athlete').toLowerCase().replace(/\s+/g, '-') + '-card.png';
     link.href = canvas.toDataURL('image/png');
     link.click();
     showToast('PNG card saved');
   } catch(e) { showToast('Card ready — long press to save'); }
+}
+
+function hexToRgba(hex, alpha) {
+  if (!hex || hex.length < 7) return 'rgba(55,138,221,' + alpha + ')';
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+}
+
+function shadeHex(hex, amount) {
+  if (!hex || hex.length < 7) return hex;
+  const r = Math.max(0, Math.min(255, parseInt(hex.slice(1,3),16) + amount));
+  const g = Math.max(0, Math.min(255, parseInt(hex.slice(3,5),16) + amount));
+  const b = Math.max(0, Math.min(255, parseInt(hex.slice(5,7),16) + amount));
+  return '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');
 }
 
 function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();}
