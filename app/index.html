@@ -148,12 +148,16 @@ body { height: 100%; height: 100dvh; overflow: hidden; background: var(--bg); fo
 .media-play-btn { width: 30px; height: 30px; border-radius: 50%; background: rgba(4,52,44,0.7); display: flex; align-items: center; justify-content: center; }
 .media-play-btn svg { width: 14px; height: 14px; color: #fff; margin-left: 2px; }
 .media-featured-badge { position: absolute; top: 6px; left: 6px; font-size: 9px; background: var(--teal-light); color: var(--teal-mid); padding: 2px 7px; border-radius: 8px; font-weight: 500; }
-.media-vis-toggle { position: absolute; top: 6px; right: 6px; width: 22px; height: 22px; border-radius: 50%; background: rgba(255,255,255,0.9); border: 0.5px solid var(--border2); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.media-vis-toggle { width: 28px; height: 28px; border-radius: 50%; background: var(--surface2); border: 0.5px solid var(--border2); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
 .media-vis-toggle svg { width: 12px; height: 12px; color: var(--text2); }
 .media-vis-toggle.on { background: var(--teal); border-color: var(--teal); }
 .media-vis-toggle.on svg { color: #fff; }
-.media-hidden-label { position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%); font-size: 9px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; background: rgba(0,0,0,0.55); color: rgba(255,255,255,0.7); padding: 2px 7px; border-radius: 6px; white-space: nowrap; pointer-events: none; }
-.media-info { padding: 6px 8px; }
+.media-hidden-label { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 9px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; background: rgba(0,0,0,0.55); color: rgba(255,255,255,0.7); padding: 2px 7px; border-radius: 6px; white-space: nowrap; pointer-events: none; }
+.media-info { padding: 5px 8px 2px; }
+.media-actions { display: flex; align-items: center; justify-content: space-between; padding: 4px 8px 6px; gap: 6px; }
+.media-delete-btn { width: 28px; height: 28px; border-radius: 50%; background: var(--surface2); border: 0.5px solid var(--border2); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+.media-delete-btn svg { width: 12px; height: 12px; color: var(--text3); }
+.media-delete-btn:active svg { color: #e05c5c; }
 .media-name { font-size: 11px; font-weight: 500; color: var(--text1); }
 .media-tag { font-size: 10px; color: var(--text3); margin-top: 1px; }
 .media-add { border: 0.5px dashed var(--border2); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 4px; cursor: pointer; border-radius: var(--r-md); min-height: 80px; }
@@ -1226,6 +1230,7 @@ textarea.input-field { resize: vertical; min-height: 80px; }
           Save backup first
         </button>
         <button class="action-btn secondary" onclick="document.getElementById('leave-overlay').classList.remove('open');">Stay and keep editing</button>
+        <button style="background:none;border:none;cursor:pointer;padding:8px 0 0;font-size:12px;color:var(--text3);text-decoration:underline;font-family:var(--font-body);" onclick="leaveAnyway();">Leave without saving</button>
       </div>
     </div>
   </div>
@@ -1241,14 +1246,14 @@ const DB_VERSION = 1;
 let db;
 
 const SPORT_STATS = {
-  Baseball:   [{l:'Batting avg',v:'.342',d:'up',dd:'+.021'},{l:'Home runs',v:'14',d:'up',dd:'+3'},{l:'RBI',v:'47',d:'up',dd:'+8'},{l:'On-base %',v:'.412',d:'up',dd:'+.018'},{l:'Stolen bases',v:'11',d:'dn',dd:'-2'},{l:'ERA',v:'2.14',d:'dn',dd:'-.32'}],
-  Soccer:     [{l:'Goals',v:'18',d:'up',dd:'+4'},{l:'Assists',v:'11',d:'up',dd:'+2'},{l:'Pass accuracy',v:'94%',d:'up',dd:'+2%'},{l:'Shots on target',v:'42',d:'up',dd:'+8'},{l:'Avg rating',v:'7.8',d:'up',dd:'+0.4'}],
-  Basketball: [{l:'PPG',v:'22.4',d:'up',dd:'+3.1'},{l:'RPG',v:'8.1',d:'up',dd:'+1.2'},{l:'APG',v:'5.3',d:'dn',dd:'-0.4'},{l:'FG%',v:'48%',d:'up',dd:'+3%'},{l:'3P%',v:'38%',d:'up',dd:'+4%'}],
-  Football:   [{l:'Pass yards',v:'1,842',d:'up',dd:'+210'},{l:'Touchdowns',v:'21',d:'up',dd:'+4'},{l:'Completion %',v:'67%',d:'up',dd:'+3%'},{l:'Passer rating',v:'112.4',d:'up',dd:'+8.2'},{l:'Rush yards',v:'340',d:'up',dd:'+60'}],
-  Lacrosse:   [{l:'Goals',v:'34',d:'up',dd:'+6'},{l:'Assists',v:'19',d:'up',dd:'+4'},{l:'Shot %',v:'62%',d:'up',dd:'+5%'},{l:'Ground balls',v:'28',d:'up',dd:'+3'},{l:'Caused turnovers',v:'14',d:'up',dd:'+2'}],
-  Volleyball: [{l:'Kills',v:'3.8',d:'up',dd:'+0.5'},{l:'Digs',v:'4.2',d:'dn',dd:'-0.3'},{l:'Aces',v:'1.2',d:'up',dd:'+0.2'},{l:'Blocks',v:'0.9',d:'up',dd:'+0.1'},{l:'Hit %',v:'.310',d:'up',dd:'+.024'}],
-  Swimming:   [{l:'100m free',v:'49.8s',d:'dn',dd:'-0.4s'},{l:'200m free',v:'1:52.3',d:'dn',dd:'-1.2s'},{l:'50m free',v:'23.1s',d:'dn',dd:'-0.2s'}],
-  Track:      [{l:'100m',v:'10.84s',d:'dn',dd:'-0.12s'},{l:'200m',v:'22.1s',d:'dn',dd:'-0.3s'},{l:'Long jump',v:'22ft 4in',d:'up',dd:'+8in'},{l:'High jump',v:'6ft 2in',d:'up',dd:'+1in'}],
+  Baseball:   [{l:'Batting avg',v:'.342'},{l:'Home runs',v:'14'},{l:'RBI',v:'47'},{l:'On-base %',v:'.412'},{l:'Stolen bases',v:'11'},{l:'ERA',v:'2.14'}],
+  Soccer:     [{l:'Goals',v:'18'},{l:'Assists',v:'11'},{l:'Pass accuracy',v:'94%'},{l:'Shots on target',v:'42'},{l:'Avg rating',v:'7.8'}],
+  Basketball: [{l:'PPG',v:'22.4'},{l:'RPG',v:'8.1'},{l:'APG',v:'5.3'},{l:'FG%',v:'48%'},{l:'3P%',v:'38%'}],
+  Football:   [{l:'Pass yards',v:'1842'},{l:'Touchdowns',v:'21'},{l:'Completion %',v:'67%'},{l:'Passer rating',v:'112.4'},{l:'Rush yards',v:'340'}],
+  Lacrosse:   [{l:'Goals',v:'34'},{l:'Assists',v:'19'},{l:'Shot %',v:'62%'},{l:'Ground balls',v:'28'},{l:'Caused turnovers',v:'14'}],
+  Volleyball: [{l:'Kills',v:'3.8'},{l:'Digs',v:'4.2'},{l:'Aces',v:'1.2'},{l:'Blocks',v:'0.9'},{l:'Hit %',v:'.310'}],
+  Swimming:   [{l:'100m free',v:'49.8s'},{l:'200m free',v:'1:52.3'},{l:'50m free',v:'23.1s'}],
+  Track:      [{l:'100m',v:'10.84s'},{l:'200m',v:'22.1s'},{l:'Long jump',v:"22'4\""},{l:'High jump',v:"6'2\""}],
 };
 
 const PERSONA_DATA = {
@@ -1471,14 +1476,19 @@ function clearDemoData() {
 }
 
 // ── LEAVE GUARD — popstate only, no native browser dialogs ──
+function leaveAnyway() {
+  document.getElementById('leave-overlay').classList.remove('open');
+  window.removeEventListener('popstate', window._leaveGuardHandler);
+  history.back();
+}
+
 function initLeaveGuard() {
-  // Push a state so we have something to intercept on back
   history.pushState({ db: true }, '');
-  window.addEventListener('popstate', () => {
-    // Re-push so the back button doesn't actually navigate away
+  window._leaveGuardHandler = () => {
     history.pushState({ db: true }, '');
     document.getElementById('leave-overlay').classList.add('open');
-  });
+  };
+  window.addEventListener('popstate', window._leaveGuardHandler);
   // Auto-save silently when tab is hidden or minimized
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') saveState();
@@ -2301,10 +2311,15 @@ function renderOverview() {
       ${m.type==='video'?`<div class="media-play"><div class="media-play-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor"/></svg></div></div>`:''}
       ${m.featured?'<div class="media-featured-badge">Featured</div>':''}
       ${!m.visible?'<div class="media-hidden-label">Hidden</div>':''}
-      <div class="media-vis-toggle ${m.visible?'on':''}" onclick="toggleMediaVisibility('${m.id}',this)" title="${m.visible?'Hide from exports':'Show in exports'}">
-        ${m.visible ? eyeOpen : eyeOff}
-      </div>
       <div class="media-info"><div class="media-name">${m.name}</div><div class="media-tag">${(m.tags||[]).length?m.tags.join(' · '):m.tag||''}</div></div>
+      <div class="media-actions">
+        <div class="media-vis-toggle ${m.visible?'on':''}" onclick="toggleMediaVisibility('${m.id}',this)" title="${m.visible?'Hide from exports':'Show in exports'}">
+          ${m.visible ? eyeOpen : eyeOff}
+        </div>
+        <button class="media-delete-btn" onclick="deleteMedia('${m.id}')" title="Delete">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+        </button>
+      </div>
     </div>`).join('') + `<div class="media-add" onclick="navigateTo('ingest')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span>Add media</span></div>`;
 }
 
@@ -2325,6 +2340,7 @@ function renderStatsScreen() {
   document.getElementById('stats-section-lbl').textContent = appState.sport + ' · ' + appState.season + ' · tap value to edit';
   const eyeOpen = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
   const eyeOff  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+  const trashIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:14px;height:14px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>`;
   const list = document.getElementById('stats-list');
   list.innerHTML = all.map((s,i) => {
     const isHidden = hidden.includes(i);
@@ -2339,12 +2355,58 @@ function renderStatsScreen() {
           onfocus="this.style.background='var(--teal-light)';this.style.outline='none'"
           onblur="this.style.background='transparent'"/>
         ${s.d==='up'?`<span class="sri-delta up">${s.dd}</span>`:s.d==='dn'?`<span class="sri-delta dn">${s.dd}</span>`:''}
-        <div class="vis-toggle ${isHidden?'':'on'}" onclick="toggleStatVisibility(this,${i})" title="Toggle recruiter visibility">
+        <div class="vis-toggle ${isHidden?'':'on'}" onclick="toggleStatVisibility(this,${i})" title="Toggle visibility in exports">
           ${isHidden ? eyeOff : eyeOpen}
         </div>
+        <button onclick="deleteStat(${i},${isCustom})" title="Delete stat"
+          style="background:none;border:none;cursor:pointer;padding:4px;color:var(--text3);display:flex;align-items:center;border-radius:6px;transition:color 0.15s;"
+          onmouseenter="this.style.color='var(--red-mid)'" onmouseleave="this.style.color='var(--text3)'">
+          ${trashIcon}
+        </button>
       </div>
     </div>`;
   }).join('');
+}
+
+// ── DELTA COMPUTATION ──
+// Strips non-numeric characters and parses a stat value string to a float.
+// Returns NaN if nothing usable is found.
+function parseStatNum(v) {
+  if (!v) return NaN;
+  // Remove commas, letters (s for seconds, %, ft, in, etc.) then parse
+  const cleaned = String(v).replace(/,/g, '').replace(/[^0-9.\-]/g, '');
+  return parseFloat(cleaned);
+}
+
+// Given a label and the current value string, look up the previous season's
+// value for the same label and return {d, dd} delta fields, or {} if unknown.
+function computeDelta(label, currentVal) {
+  const sport = appState.sport;
+  const seasons = appState.seasons;
+  const currentIdx = seasons.indexOf(appState.season);
+  if (currentIdx < 0 || currentIdx >= seasons.length - 1) return {}; // no previous season
+
+  const prevSeason = seasons[currentIdx + 1];
+  const prevStats = appState.stats[sport]?.[prevSeason];
+  if (!prevStats) return {};
+
+  const prevStat = prevStats.find(s => s.l === label);
+  if (!prevStat) return {};
+
+  const cur = parseStatNum(currentVal);
+  const prev = parseStatNum(prevStat.v);
+  if (isNaN(cur) || isNaN(prev) || prev === 0) return {};
+
+  const diff = cur - prev;
+  if (Math.abs(diff) < 0.0001) return { d: '', dd: '' }; // no change
+
+  // Preserve any suffix from the current value (%, s, etc.)
+  const suffix = String(currentVal).replace(/[\d.,\-]/g, '').trim();
+  // Format the delta to match the precision of the current value
+  const decimals = (String(currentVal).split('.')[1] || '').replace(/[^0-9]/g,'').length;
+  const diffStr = (diff > 0 ? '+' : '') + diff.toFixed(decimals) + suffix;
+
+  return { d: diff > 0 ? 'up' : 'dn', dd: diffStr };
 }
 
 function updateStatValue(idx, val, isCustom) {
@@ -2352,12 +2414,23 @@ function updateStatValue(idx, val, isCustom) {
   if (!val) return;
   if (isCustom) {
     const ci = idx - getActiveStats().length;
-    if (appState.customStats[ci]) appState.customStats[ci].v = val;
+    if (appState.customStats[ci]) {
+      appState.customStats[ci].v = val;
+      const delta = computeDelta(appState.customStats[ci].l, val);
+      appState.customStats[ci].d  = delta.d  || '';
+      appState.customStats[ci].dd = delta.dd || '';
+    }
   } else {
     const stats = getActiveStats();
-    if (stats[idx]) stats[idx].v = val;
+    if (stats[idx]) {
+      stats[idx].v = val;
+      const delta = computeDelta(stats[idx].l, val);
+      stats[idx].d  = delta.d  || '';
+      stats[idx].dd = delta.dd || '';
+    }
   }
   saveState();
+  renderStatsScreen();
   renderOverview();
 }
 
@@ -2388,8 +2461,25 @@ function selectSeason(s, el) {
   appState.season = s;
   document.querySelectorAll('.s-chip').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
+  // Recompute deltas for the newly selected season
+  recomputeAllDeltas();
   renderStatsScreen();
   saveState();
+}
+
+// Recompute d/dd for every stat in the active season based on previous season data
+function recomputeAllDeltas() {
+  const stats = getActiveStats();
+  stats.forEach(s => {
+    const delta = computeDelta(s.l, s.v);
+    s.d  = delta.d  || '';
+    s.dd = delta.dd || '';
+  });
+  appState.customStats.forEach(s => {
+    const delta = computeDelta(s.l, s.v);
+    s.d  = delta.d  || '';
+    s.dd = delta.dd || '';
+  });
 }
 
 function addSeason(el) {
@@ -2415,6 +2505,37 @@ function toggleStatVisibility(btn, idx) {
     if (!appState.hiddenStatIndices.includes(idx)) appState.hiddenStatIndices.push(idx);
   }
   saveState();
+}
+
+function deleteStat(idx, isCustom) {
+  const stats = getActiveStats();
+  const all = [...stats, ...appState.customStats];
+  const label = all[idx]?.l || 'this stat';
+  if (isCustom) {
+    showConfirm(
+      'Delete stat',
+      '"' + label + '" will be permanently removed.',
+      () => {
+        const ci = idx - stats.length;
+        appState.customStats.splice(ci, 1);
+        appState.hiddenStatIndices = (appState.hiddenStatIndices || [])
+          .filter(i => i !== idx).map(i => i > idx ? i - 1 : i);
+        saveState(); renderStatsScreen(); renderOverview();
+        showToast('Stat deleted');
+      }, 'Delete'
+    );
+  } else {
+    showConfirm(
+      'Hide stat',
+      '"' + label + '" is a default stat — it will be hidden from all exports.',
+      () => {
+        if (!appState.hiddenStatIndices) appState.hiddenStatIndices = [];
+        if (!appState.hiddenStatIndices.includes(idx)) appState.hiddenStatIndices.push(idx);
+        saveState(); renderStatsScreen(); renderOverview();
+        showToast('Stat hidden from exports');
+      }, 'Hide it'
+    );
+  }
 }
 
 function showAddStatModal() {
@@ -2747,6 +2868,23 @@ function toggleMediaVisibility(mediaId, btn) {
   showToast(item.visible ? 'Included in exports' : 'Hidden from exports — photo kept');
 }
 
+function deleteMedia(mediaId) {
+  const item = appState.media.find(m => m.id === mediaId);
+  if (!item) return;
+  showConfirm(
+    'Delete photo',
+    '"' + item.name + '" will be permanently removed from your profile.',
+    () => {
+      appState.media = appState.media.filter(m => m.id !== mediaId);
+      saveState();
+      renderOverview();
+      if (document.getElementById('recruiter-view').classList.contains('open')) renderRecruiterView();
+      showToast('Photo deleted');
+    },
+    'Delete'
+  );
+}
+
 function renderShareScreen() {
   const a = appState.athlete;
   const p = PERSONA_DATA[appState.persona] || PERSONA_DATA.grinder;
@@ -2862,16 +3000,16 @@ function saveShareCard() {
 
 // ── SPORTS LIST (expanded) ──
 const EXTRA_SPORTS = {
-  Softball:    [{l:'Batting avg',v:'.318',d:'up',dd:'+.024'},{l:'Home runs',v:'8',d:'up',dd:'+2'},{l:'RBI',v:'32',d:'up',dd:'+6'},{l:'ERA',v:'1.84',d:'dn',dd:'-.22'},{l:'Strikeouts',v:'74',d:'up',dd:'+12'}],
-  Wrestling:   [{l:'Record',v:'28-4',d:'up',dd:'+6W'},{l:'Pins',v:'14',d:'up',dd:'+3'},{l:'Tech falls',v:'6',d:'up',dd:'+2'},{l:'Points scored',v:'312',d:'up',dd:'+48'}],
-  Tennis:      [{l:'Win/loss',v:'22-6',d:'up',dd:'+4W'},{l:'Aces',v:'87',d:'up',dd:'+14'},{l:'1st serve %',v:'68%',d:'up',dd:'+3%'},{l:'Break pts won',v:'74%',d:'up',dd:'+5%'}],
-  'Cross Country': [{l:'5K PR',v:'16:42',d:'dn',dd:'-0:18'},{l:'Season avg',v:'17:05',d:'dn',dd:'-0:22'},{l:'Finish rank',v:'Top 10%',d:'up',dd:''},{l:'Miles/week',v:'48',d:'up',dd:'+6'}],
-  Hockey:      [{l:'Goals',v:'22',d:'up',dd:'+5'},{l:'Assists',v:'31',d:'up',dd:'+8'},{l:'Points',v:'53',d:'up',dd:'+13'},{l:'+/-',v:'+18',d:'up',dd:'+7'},{l:'Shots',v:'142',d:'up',dd:'+22'}],
-  Golf:        [{l:'Scoring avg',v:'74.2',d:'dn',dd:'-1.4'},{l:'Fairways hit',v:'68%',d:'up',dd:'+4%'},{l:'GIR %',v:'61%',d:'up',dd:'+5%'},{l:'Putts/round',v:'29.4',d:'dn',dd:'-0.8'}],
-  Gymnastics:  [{l:'All-around',v:'36.8',d:'up',dd:'+0.6'},{l:'Vault',v:'9.4',d:'up',dd:'+0.2'},{l:'Bars',v:'9.1',d:'up',dd:'+0.3'},{l:'Floor',v:'9.3',d:'up',dd:'+0.2'}],
-  Fishing:     [{l:'Tournament wins',v:'4',d:'up',dd:'+2'},{l:'Top 10 finishes',v:'9',d:'up',dd:'+3'},{l:'Largest catch',v:'7.2 lbs',d:'up',dd:'+0.8'},{l:'Points ranking',v:'#3',d:'up',dd:'+2'}],
-  Cheerleading:[{l:'Competition score',v:'94.6',d:'up',dd:'+2.1'},{l:'Tumbling level',v:'Level 5',d:'',dd:''},{l:'Stunting score',v:'9.2',d:'up',dd:'+0.4'}],
-  'Water Polo': [{l:'Goals',v:'28',d:'up',dd:'+6'},{l:'Assists',v:'14',d:'up',dd:'+3'},{l:'Saves (GK)',v:'88',d:'up',dd:'+12'},{l:'Shot %',v:'54%',d:'up',dd:'+4%'}],
+  Softball:      [{l:'Batting avg',v:'.318'},{l:'Home runs',v:'8'},{l:'RBI',v:'32'},{l:'ERA',v:'1.84'},{l:'Strikeouts',v:'74'}],
+  Wrestling:     [{l:'Record',v:'28-4'},{l:'Pins',v:'14'},{l:'Tech falls',v:'6'},{l:'Points scored',v:'312'}],
+  Tennis:        [{l:'Win/loss',v:'22-6'},{l:'Aces',v:'87'},{l:'1st serve %',v:'68%'},{l:'Break pts won',v:'74%'}],
+  'Cross Country':[{l:'5K PR',v:'16:42'},{l:'Season avg',v:'17:05'},{l:'Finish rank',v:'Top 10%'},{l:'Miles/week',v:'48'}],
+  Hockey:        [{l:'Goals',v:'22'},{l:'Assists',v:'31'},{l:'Points',v:'53'},{l:'+/-',v:'+18'},{l:'Shots',v:'142'}],
+  Golf:          [{l:'Scoring avg',v:'74.2'},{l:'Fairways hit',v:'68%'},{l:'GIR %',v:'61%'},{l:'Putts/round',v:'29.4'}],
+  Gymnastics:    [{l:'All-around',v:'36.8'},{l:'Vault',v:'9.4'},{l:'Bars',v:'9.1'},{l:'Floor',v:'9.3'}],
+  Fishing:       [{l:'Tournament wins',v:'4'},{l:'Top 10 finishes',v:'9'},{l:'Largest catch',v:'7.2 lbs'},{l:'Points ranking',v:'#3'}],
+  Cheerleading:  [{l:'Competition score',v:'94.6'},{l:'Tumbling level',v:'Level 5'},{l:'Stunting score',v:'9.2'}],
+  'Water Polo':  [{l:'Goals',v:'28'},{l:'Assists',v:'14'},{l:'Saves (GK)',v:'88'},{l:'Shot %',v:'54%'}],
 };
 
 // Merge extra sports into SPORT_STATS at runtime
