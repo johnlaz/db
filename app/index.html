@@ -152,6 +152,7 @@ body { height: 100%; height: 100dvh; overflow: hidden; background: var(--bg); fo
 .media-vis-toggle svg { width: 12px; height: 12px; color: var(--text2); }
 .media-vis-toggle.on { background: var(--teal); border-color: var(--teal); }
 .media-vis-toggle.on svg { color: #fff; }
+.media-hidden-label { position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%); font-size: 9px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; background: rgba(0,0,0,0.55); color: rgba(255,255,255,0.7); padding: 2px 7px; border-radius: 6px; white-space: nowrap; pointer-events: none; }
 .media-info { padding: 6px 8px; }
 .media-name { font-size: 11px; font-weight: 500; color: var(--text1); }
 .media-tag { font-size: 10px; color: var(--text3); margin-top: 1px; }
@@ -739,26 +740,29 @@ textarea.input-field { resize: vertical; min-height: 80px; }
           <div class="lp-style-card selected" onclick="selectLPStyle('spotlight',this)" id="lp-card-spotlight">
             <div class="lp-style-preview">
               <svg viewBox="0 0 340 140" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
-                <rect width="340" height="140" fill="#1A2850"/>
-                <rect x="0" y="0" width="340" height="140" fill="#0C447C" opacity="0.5"/>
-                <circle cx="60" cy="70" r="90" fill="#378ADD" opacity="0.3"/>
-                <circle cx="280" cy="30" r="60" fill="#378ADD" opacity="0.2"/>
-                <rect x="20" y="62" width="180" height="28" rx="2" fill="rgba(255,255,255,0.9)"/>
-                <rect x="20" y="96" width="100" height="10" rx="2" fill="rgba(255,255,255,0.4)"/>
-                <rect x="20" y="112" width="70" height="8" rx="2" fill="rgba(255,255,255,0.25)"/>
-                <rect x="230" y="30" width="90" height="80" rx="6" fill="rgba(255,255,255,0.12)"/>
-                <rect x="240" y="42" width="40" height="20" rx="2" fill="rgba(255,255,255,0.6)"/>
-                <rect x="240" y="68" width="30" height="8" rx="2" fill="rgba(255,255,255,0.3)"/>
-                <rect x="240" y="82" width="40" height="20" rx="2" fill="rgba(255,255,255,0.6)"/>
-                <rect x="240" y="108" width="30" height="8" rx="2" fill="rgba(255,255,255,0.3)"/>
-                <rect x="20" y="20" width="50" height="36" rx="18" fill="rgba(255,255,255,0.15)"/>
-                <text x="45" y="44" font-size="18" fill="white" text-anchor="middle" font-weight="bold">MR</text>
+                <rect width="340" height="140" fill="#0B0F19"/>
+                <text x="210" y="130" font-family="sans-serif" font-size="110" font-weight="800" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1">S</text>
+                <rect x="0" y="0" width="340" height="140" fill="url(#sp-grad)" opacity="0.6"/>
+                <defs><linearGradient id="sp-grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1A2850" stop-opacity="0.9"/><stop offset="100%" stop-color="transparent"/></linearGradient></defs>
+                <rect x="20" y="18" width="8" height="1" rx="0.5" fill="#378ADD"/>
+                <rect x="32" y="16" width="55" height="6" rx="1" fill="rgba(255,255,255,0.3)"/>
+                <rect x="20" y="36" width="160" height="22" rx="2" fill="rgba(255,255,255,0.88)"/>
+                <rect x="20" y="64" width="90" height="8" rx="2" fill="rgba(255,255,255,0.3)"/>
+                <rect x="20" y="78" width="55" height="15" rx="7" fill="rgba(255,255,255,0.1)"/>
+                <rect x="82" y="78" width="55" height="15" rx="7" fill="#378ADD"/>
+                <rect x="240" y="20" width="80" height="50" rx="6" fill="rgba(255,255,255,0.04)" stroke="rgba(55,138,221,0.3)" stroke-width="0.5"/>
+                <rect x="248" y="28" width="28" height="20" rx="1" fill="rgba(255,255,255,0.7)"/>
+                <rect x="248" y="53" width="50" height="5" rx="1" fill="rgba(255,255,255,0.2)"/>
+                <rect x="240" y="80" width="80" height="48" rx="6" fill="rgba(55,138,221,0.12)" stroke="rgba(55,138,221,0.2)" stroke-width="0.5"/>
+                <rect x="248" y="89" width="20" height="14" rx="1" fill="rgba(255,255,255,0.6)"/>
+                <rect x="274" y="89" width="20" height="14" rx="1" fill="rgba(255,255,255,0.6)"/>
+                <rect x="248" y="109" width="40" height="5" rx="1" fill="rgba(255,255,255,0.15)"/>
               </svg>
             </div>
             <div class="lp-style-info">
               <div>
                 <div class="lp-style-name">Spotlight</div>
-                <div class="lp-style-desc">Hero photo · name dominant · stats sidebar</div>
+                <div class="lp-style-desc">Athletic Editorial · midnight dark · ghost watermark</div>
               </div>
               <div class="lp-style-check">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
@@ -1515,7 +1519,7 @@ function generateLandingPage(style) {
   const a = appState.athlete;
   const p = PERSONA_DATA[appState.persona] || PERSONA_DATA.grinder;
   const sport = appState.sport;
-  const stats = getActiveStats().filter((s, i) => !(appState.hiddenStatIndices || []).includes(i)).slice(0, 6);
+  const stats = getActiveStats().filter((s, i) => !(appState.hiddenStatIndices || []).includes(i));
   const media = appState.media.filter(m => m.visible);
   const contactEmail = '';
   const athleteName = a.name || 'Athlete';
@@ -1533,7 +1537,7 @@ function generateLandingPage(style) {
       ${s.d === 'up' ? `<div class="stat-delta up">▲ ${s.dd}</div>` : s.d === 'dn' ? `<div class="stat-delta dn">▼ ${s.dd}</div>` : ''}
     </div>`).join('');
 
-  const mediaHTML = media.slice(0, 4).map(m => `
+  const mediaHTML = media.map(m => `
     <div class="media-item ${m.featured ? 'featured' : ''}">
       <div class="media-thumb-wrap">
         ${m.thumbDataUrl
@@ -1554,9 +1558,9 @@ function generateLandingPage(style) {
   <meta name="description" content="${athleteName} · ${sport} ${position} · Class of ${gradYear} · ${school}"/>
   <meta property="og:title" content="${athleteName} · DraftBound"/>
   <meta property="og:description" content="${narrative.slice(0, 150)}"/>
-  <meta name="theme-color" content="#1A2850"/>
+  <meta name="theme-color" content="#0B0F19"/>
   <title>${athleteName} · DraftBound</title>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>`;
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Space+Grotesk:wght@300;400;500;600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>`;
 
   const footerBlock = `
   <footer class="site-footer">
@@ -1580,63 +1584,439 @@ function mediaSVGForType(type) {
 
 // ── STYLE 1: SPOTLIGHT ──
 function buildSpotlight(meta, name, sport, pos, yr, school, gpa, persona, narrative, stats, media, contact, footer) {
-  return `<!DOCTYPE html><html lang="en"><head>${meta}
+  // Inject Space Grotesk into the meta block for the output page
+  const richMeta = meta.replace(
+    'family=Barlow+Condensed:wght@400;600;700&family=DM+Sans:wght@400;500',
+    'family=Barlow+Condensed:wght@400;600;700;800&family=Space+Grotesk:wght@300;400;500;600&family=DM+Sans:wght@400;500'
+  );
+
+  // Isolate top stat for Axiom spotlight treatment
+  const firstStatMatch = stats.match(/<div class="stat-card">([\s\S]*?)<\/div>\s*<\/div>/);
+  const axiomHTML = firstStatMatch ? firstStatMatch[0] : '';
+  const remainingStats = axiomHTML ? stats.replace(axiomHTML, '') : stats;
+
+  // Build context-tagged media HTML with cinematic hover
+  const rawMedia = (appState.media||[]).filter(m=>m.visible).slice(0,4);
+  const editorialMediaHTML = rawMedia.map(m => `
+    <div class="ed-media-item ${m.featured?'featured':''}">
+      <div class="ed-media-frame">
+        ${m.thumbDataUrl
+          ? `<img src="${m.thumbDataUrl}" alt="${m.name}" style="width:100%;height:100%;object-fit:cover;display:block;"/>`
+          : mediaSVGForType(m.type)}
+        ${m.type==='video'?`<div class="ed-play-overlay"><div class="ed-play-btn">▶</div></div>`:''}
+        ${m.featured?'<div class="ed-feat-badge">⭑ Featured</div>':''}
+        ${m.clipContext ? `<div class="ed-context-badge">${m.clipContext}</div>` : ''}
+      </div>
+      <div class="ed-media-caption">${m.name}</div>
+      ${(m.tags||[]).length ? `<div class="ed-media-tags">${m.tags.slice(0,2).join(' · ')}</div>` : ''}
+    </div>`).join('');
+
+  const initials = name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+  const ghostLetter = (sport||'S')[0].toUpperCase();
+  const accentColor = appState.accentColor || '#378ADD';
+  const accentDark  = appState.accentDark  || '#1A2850';
+
+  return `<!DOCTYPE html><html lang="en"><head>${richMeta}
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'DM Sans',sans-serif;background:#0a0a0a;color:#fff;min-height:100vh;}
-.hero{background:linear-gradient(135deg,#085041 0%,#0F6E56 60%,#1D9E75 100%);padding:48px 24px 40px;position:relative;overflow:hidden;}
-.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 70% 50%,rgba(255,255,255,0.05) 0%,transparent 60%);}
-.hero-inner{max-width:680px;margin:0 auto;position:relative;display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;}
-.hero-avatar{width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:700;flex-shrink:0;border:2px solid rgba(255,255,255,0.3);}
-.hero-text{flex:1;min-width:200px;}
-.hero-brand{font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
-.hero-name{font-family:'Barlow Condensed',sans-serif;font-size:clamp(36px,8vw,64px);font-weight:700;line-height:1;letter-spacing:0.5px;margin-bottom:8px;}
-.hero-meta{font-size:14px;color:rgba(255,255,255,0.7);margin-bottom:12px;}
+:root{
+  --ac:${accentColor};
+  --ac-dk:${accentDark};
+  --midnight:#0B0F19;
+  --surface:#12182A;
+  --surface2:#1A2236;
+  --border:rgba(255,255,255,0.07);
+  --text1:#F0F4FF;
+  --text2:rgba(240,244,255,0.55);
+  --text3:rgba(240,244,255,0.28);
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--midnight);color:var(--text1);min-height:100vh;overflow-x:hidden;}
+
+/* ── GHOST WATERMARK ── */
+.ghost-letter{
+  position:absolute;
+  top:50%;transform:translateY(-50%);
+  right:-0.05em;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:52vw;
+  font-weight:800;
+  line-height:1;
+  -webkit-text-stroke:1px rgba(255,255,255,0.045);
+  color:transparent;
+  pointer-events:none;
+  user-select:none;
+  z-index:0;
+}
+
+/* ── HERO ── */
+.hero{
+  position:relative;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  overflow:hidden;
+  background:linear-gradient(160deg,var(--ac-dk) 0%,var(--midnight) 55%);
+  padding:0 0 60px;
+}
+.hero::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:radial-gradient(ellipse at 80% 20%,${accentColor}22 0%,transparent 60%);
+  pointer-events:none;
+}
+.hero-inner{
+  position:relative;
+  z-index:1;
+  max-width:900px;
+  margin:0 auto;
+  padding:0 32px;
+  width:100%;
+}
+.hero-eyebrow{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:11px;
+  font-weight:500;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--text2);
+  margin-bottom:24px;
+}
+.hero-eyebrow::before{content:'';width:28px;height:1px;background:var(--ac);}
+.live-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  background:rgba(255,255,255,0.06);
+  border:0.5px solid rgba(255,255,255,0.1);
+  border-radius:20px;
+  padding:3px 10px 3px 7px;
+  font-size:10px;
+  font-weight:500;
+  color:var(--text1);
+}
+.live-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:#4ADE80;
+  box-shadow:0 0 0 0 rgba(74,222,128,0.4);
+  animation:pulse-dot 1.8s ease-in-out infinite;
+}
+@keyframes pulse-dot{
+  0%,100%{box-shadow:0 0 0 0 rgba(74,222,128,0.4);}
+  50%{box-shadow:0 0 0 5px rgba(74,222,128,0);}
+}
+.hero-name{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:clamp(52px,10vw,96px);
+  font-weight:800;
+  line-height:0.95;
+  letter-spacing:-1px;
+  color:#fff;
+  margin-bottom:16px;
+}
+.hero-identity{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:20px;
+}
+.hero-av{
+  width:48px;height:48px;border-radius:50%;
+  background:var(--ac);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:18px;font-weight:700;color:#fff;
+  flex-shrink:0;
+  border:2px solid rgba(255,255,255,0.15);
+  overflow:hidden;
+}
+.hero-av img{width:100%;height:100%;object-fit:cover;}
+.hero-meta{font-size:14px;color:var(--text2);line-height:1.5;}
 .hero-pills{display:flex;gap:8px;flex-wrap:wrap;}
-.pill{font-size:11px;padding:4px 12px;border-radius:20px;font-weight:500;}
-.pill-sport{background:rgba(255,255,255,0.15);color:#fff;}
-.pill-persona{background:#EF9F27;color:#412402;}
-.section{max-width:680px;margin:0 auto;padding:32px 24px;}
-.section-title{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:600;color:#9FE1CB;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:16px;padding-bottom:8px;border-bottom:0.5px solid rgba(255,255,255,0.1);}
-.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:0;}
-.stat-card{background:rgba(255,255,255,0.05);border:0.5px solid rgba(255,255,255,0.1);border-radius:12px;padding:16px;}
-.stat-val{font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:700;color:#fff;}
-.stat-lbl{font-size:11px;color:rgba(255,255,255,0.5);margin-top:4px;}
-.stat-delta{font-size:11px;margin-top:4px;}.stat-delta.up{color:#5DCAA5;}.stat-delta.dn{color:#F0997B;}
-.narrative-box{background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.08);border-radius:16px;padding:24px;font-size:15px;line-height:1.7;color:rgba(255,255,255,0.8);}
-.narrative-attr{font-size:11px;color:#9FE1CB;margin-top:12px;display:flex;align-items:center;gap:6px;}
-.media-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;}
-.media-item{position:relative;border-radius:12px;overflow:hidden;border:0.5px solid rgba(255,255,255,0.1);}
-.media-item.featured{border:2px solid #1D9E75;}
-.media-thumb-wrap{aspect-ratio:16/10;overflow:hidden;position:relative;}
-.play-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
-.play-btn{width:44px;height:44px;border-radius:50%;background:rgba(8,80,65,0.8);display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;padding-left:4px;}
-.feat-badge{position:absolute;top:8px;left:8px;font-size:10px;background:#E1F5EE;color:#0F6E56;padding:3px 8px;border-radius:8px;font-weight:500;}
-.media-caption{padding:8px 12px 4px;font-size:12px;font-weight:500;color:rgba(255,255,255,0.8);}
-.media-tags{padding:0 12px 8px;font-size:10px;color:rgba(255,255,255,0.4);}
-.contact-section{text-align:center;padding:40px 24px;}
-.contact-btn{display:inline-block;background:#1D9E75;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:600;padding:14px 40px;border-radius:50px;text-decoration:none;letter-spacing:0.3px;transition:background 0.15s;}
-.contact-btn:hover{background:#0F6E56;}
-.site-footer{background:rgba(255,255,255,0.03);border-top:0.5px solid rgba(255,255,255,0.08);padding:16px 24px;text-align:center;font-size:12px;color:rgba(255,255,255,0.3);display:flex;justify-content:space-between;max-width:100%;}
+.pill{font-size:11px;padding:5px 13px;border-radius:20px;font-weight:500;letter-spacing:0.3px;}
+.pill-sport{background:rgba(255,255,255,0.1);color:#fff;border:0.5px solid rgba(255,255,255,0.15);}
+.pill-persona{background:${accentColor};color:var(--midnight);font-weight:600;}
+
+/* ── SCROLL CUE ── */
+.scroll-cue{
+  position:absolute;bottom:24px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  color:var(--text3);font-size:10px;letter-spacing:1px;text-transform:uppercase;
+  z-index:1;animation:bob 2s ease-in-out infinite;
+}
+@keyframes bob{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(4px);}}
+.scroll-cue svg{width:16px;height:16px;}
+
+/* ── SECTIONS ── */
+.section{max-width:900px;margin:0 auto;padding:64px 32px;}
+.section-eyebrow{
+  font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;
+  color:var(--ac);margin-bottom:20px;
+  display:flex;align-items:center;gap:10px;
+}
+.section-eyebrow::after{content:'';flex:1;height:0.5px;background:var(--border);}
+
+/* ── AXIOM STAT ── */
+.axiom-wrap{
+  background:linear-gradient(135deg,${accentDark} 0%,${accentColor}22 100%);
+  border:0.5px solid ${accentColor}44;
+  border-radius:20px;
+  padding:36px 40px;
+  margin-bottom:12px;
+  position:relative;
+  overflow:hidden;
+}
+.axiom-wrap::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:radial-gradient(ellipse at 0% 50%,${accentColor}18 0%,transparent 65%);
+}
+.axiom-wrap .stat-val{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:clamp(72px,12vw,120px);
+  font-weight:800;
+  line-height:1;
+  color:#fff;
+  position:relative;z-index:1;
+  -webkit-text-stroke:0;
+}
+.axiom-wrap .stat-lbl{
+  font-size:13px;font-weight:500;
+  color:var(--text2);
+  letter-spacing:1px;text-transform:uppercase;
+  margin-top:8px;position:relative;z-index:1;
+}
+.axiom-wrap .stat-delta{
+  font-size:13px;margin-top:6px;position:relative;z-index:1;
+}
+.axiom-glow{
+  position:absolute;top:-60px;right:-60px;
+  width:220px;height:220px;border-radius:50%;
+  background:${accentColor};
+  opacity:0.08;filter:blur(50px);
+  pointer-events:none;
+}
+
+/* ── SECONDARY STATS GRID ── */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;}
+.stat-card{
+  background:var(--surface);
+  border:0.5px solid var(--border);
+  border-radius:14px;padding:18px 16px;
+  transition:border-color 0.2s,transform 0.2s;
+}
+.stat-card:hover{border-color:${accentColor}55;transform:translateY(-2px);}
+.stat-val{font-family:'Barlow Condensed',sans-serif;font-size:34px;font-weight:700;color:#fff;line-height:1;}
+.stat-lbl{font-size:11px;color:var(--text2);margin-top:5px;letter-spacing:0.3px;}
+.stat-delta{font-size:11px;margin-top:4px;}
+.stat-delta.up{color:#4ADE80;}
+.stat-delta.dn{color:#F87171;}
+
+/* ── NARRATIVE QUOTE BLOCK ── */
+.narrative-outer{position:relative;border-radius:20px;padding:2px;}
+.narrative-outer::before{
+  content:'';
+  position:absolute;inset:0;border-radius:20px;
+  background:linear-gradient(135deg,${accentColor}55,transparent 50%,${accentColor}33);
+  animation:grad-border 4s linear infinite;
+}
+@keyframes grad-border{
+  0%{background:linear-gradient(135deg,${accentColor}55,transparent 50%,${accentColor}33);}
+  50%{background:linear-gradient(315deg,${accentColor}55,transparent 50%,${accentColor}33);}
+  100%{background:linear-gradient(135deg,${accentColor}55,transparent 50%,${accentColor}33);}
+}
+.narrative-inner{
+  position:relative;
+  background:var(--surface);
+  border-radius:19px;
+  padding:36px 36px 28px;
+  overflow:hidden;
+}
+.narrative-quote-bg{
+  position:absolute;
+  top:-20px;left:16px;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:180px;font-weight:800;
+  line-height:1;color:transparent;
+  -webkit-text-stroke:1px rgba(255,255,255,0.04);
+  pointer-events:none;user-select:none;
+}
+.narrative-text{
+  position:relative;z-index:1;
+  font-size:clamp(16px,2.2vw,20px);
+  line-height:1.75;
+  color:rgba(240,244,255,0.85);
+  font-weight:400;
+}
+.narrative-attr{
+  position:relative;z-index:1;
+  margin-top:20px;
+  font-size:11px;color:var(--ac);
+  font-weight:500;letter-spacing:1px;text-transform:uppercase;
+  display:flex;align-items:center;gap:6px;
+}
+.narrative-attr::before{content:'';width:20px;height:1px;background:var(--ac);}
+
+/* ── CINEMATIC MEDIA ── */
+.ed-media-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+.ed-media-item{border-radius:16px;overflow:hidden;border:0.5px solid var(--border);background:var(--surface);}
+.ed-media-frame{
+  aspect-ratio:16/10;overflow:hidden;position:relative;
+  transition:transform 0.4s cubic-bezier(0.16,1,0.3,1);
+}
+.ed-media-item:hover .ed-media-frame{transform:scale(1.03) translateY(-4px);}
+.ed-media-item.featured{border:2px solid ${accentColor};}
+.ed-play-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.2);}
+.ed-play-btn{
+  width:48px;height:48px;border-radius:50%;
+  background:rgba(0,0,0,0.6);
+  backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;color:#fff;padding-left:4px;
+  border:1px solid rgba(255,255,255,0.2);
+}
+.ed-feat-badge{
+  position:absolute;top:10px;left:10px;
+  font-size:10px;background:${accentColor};color:var(--midnight);
+  padding:3px 9px;border-radius:8px;font-weight:600;letter-spacing:0.5px;
+}
+.ed-context-badge{
+  position:absolute;bottom:0;left:0;right:0;
+  background:linear-gradient(to top,rgba(0,0,0,0.75) 0%,transparent 100%);
+  padding:20px 10px 8px;
+  font-size:10px;font-weight:500;color:rgba(255,255,255,0.9);
+  letter-spacing:0.5px;
+}
+.ed-media-caption{padding:10px 12px 4px;font-size:12px;font-weight:500;color:var(--text1);}
+.ed-media-tags{padding:0 12px 10px;font-size:10px;color:var(--text3);}
+
+/* ── FLOATING FAB ── */
+.fab-recruit{
+  position:fixed;bottom:28px;right:24px;z-index:100;
+  display:flex;align-items:center;gap:10px;
+  background:var(--ac);
+  color:var(--midnight);
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:15px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;
+  padding:13px 22px;border-radius:50px;
+  box-shadow:0 8px 32px ${accentColor}55;
+  cursor:pointer;text-decoration:none;
+  transition:transform 0.2s,box-shadow 0.2s;
+  border:none;
+}
+.fab-recruit:hover{transform:translateY(-2px);box-shadow:0 12px 40px ${accentColor}77;}
+.fab-recruit svg{width:16px;height:16px;flex-shrink:0;}
+.fab-copied{display:none;position:fixed;bottom:84px;right:24px;z-index:101;background:var(--surface2);color:var(--text1);font-size:12px;padding:8px 14px;border-radius:10px;pointer-events:none;}
+.fab-copied.show{display:block;animation:fadeIn 0.2s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── DIVIDER ── */
+.divider{height:0.5px;background:var(--border);max-width:900px;margin:0 auto;}
+
+/* ── CTA SECTION ── */
+.cta-section{text-align:center;padding:80px 32px;}
+.cta-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:16px;}
+.contact-btn{
+  display:inline-block;
+  background:var(--ac);color:var(--midnight);
+  font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;
+  padding:16px 48px;border-radius:50px;text-decoration:none;
+  letter-spacing:0.5px;
+  transition:transform 0.2s,box-shadow 0.2s;
+  box-shadow:0 6px 24px ${accentColor}44;
+}
+.contact-btn:hover{transform:translateY(-2px);box-shadow:0 10px 36px ${accentColor}66;}
+
+/* ── FOOTER ── */
+.site-footer{
+  background:rgba(255,255,255,0.02);
+  border-top:0.5px solid var(--border);
+  padding:20px 32px;
+  font-size:11px;color:var(--text3);
+  display:flex;justify-content:space-between;
+  max-width:100%;letter-spacing:0.3px;
+}
 </style></head><body>
-<div class="hero"><div class="hero-inner">
-  <div class="hero-avatar">${(name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase())}</div>
-  <div class="hero-text">
-    <div class="hero-brand">DraftBound · Athlete Profile</div>
+
+<!-- FLOATING RECRUIT FAB -->
+<button class="fab-recruit" onclick="(function(){var s='Recruiting inquiry: ${name} · ${sport}${pos?' · '+pos:''} · Class of ${yr}\\n\\nView full profile at: '+window.location.href;navigator.clipboard?navigator.clipboard.writeText(s).then(function(){var t=document.getElementById('fab-toast');t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2000);}):window.location.href='mailto:?subject='+encodeURIComponent('${name} — Recruiting Inquiry')+'&body='+encodeURIComponent(s);})()" aria-label="Recruit ${name}">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 1.26h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.74a16 16 0 0 0 6 6l.9-.9a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.02z"/></svg>
+  Recruit ${name.split(' ')[0]}
+</button>
+<div class="fab-copied" id="fab-toast">✓ Profile synopsis copied</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="ghost-letter">${ghostLetter}</div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow">
+      DraftBound · Athlete Profile
+      ${yr ? `<span class="live-badge"><span class="live-dot"></span>Class of ${yr}</span>` : ''}
+    </div>
     <div class="hero-name">${name}</div>
-    <div class="hero-meta">${[school, gpa ? 'GPA ' + gpa : ''].filter(Boolean).join(' · ')}</div>
+    <div class="hero-identity">
+      <div class="hero-av">${initials}</div>
+      <div>
+        <div class="hero-meta">${[school, gpa?'GPA '+gpa:''].filter(Boolean).join(' · ')}</div>
+      </div>
+    </div>
     <div class="hero-pills">
-      <span class="pill pill-sport">${sport}${pos ? ' · ' + pos : ''}${yr ? ' · Class of ' + yr : ''}</span>
-      ${persona ? `<span class="pill pill-persona">⚡ ${persona}</span>` : ''}
+      <span class="pill pill-sport">${sport}${pos?' · '+pos:''}</span>
+      ${persona?`<span class="pill pill-persona">⚡ ${persona}</span>`:''}
     </div>
   </div>
-</div></div>
-<div class="section"><div class="section-title">Season Stats</div><div class="stat-grid">${stats}</div></div>
-<div class="section"><div class="section-title">Narrative</div>
-  <div class="narrative-box">${narrative}<div class="narrative-attr">★ ${persona} · DraftBound Profile</div></div>
+  <div class="scroll-cue">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    scroll
+  </div>
 </div>
-${media ? `<div class="section"><div class="section-title">Highlights &amp; Media</div><div class="media-grid">${media}</div></div>` : ''}
-<div class="contact-section">${contact}</div>
+
+<!-- AXIOM STAT -->
+<div class="section" style="padding-bottom:0;">
+  <div class="section-eyebrow">Season Highlight</div>
+  ${axiomHTML ? `
+  <div class="axiom-wrap">
+    <div class="axiom-glow"></div>
+    ${axiomHTML}
+  </div>` : ''}
+  ${remainingStats ? `<div class="stat-grid">${remainingStats}</div>` : ''}
+</div>
+
+<div class="divider" style="margin-top:64px;"></div>
+
+<!-- NARRATIVE -->
+<div class="section">
+  <div class="section-eyebrow">Scout Report</div>
+  <div class="narrative-outer">
+    <div class="narrative-inner">
+      <div class="narrative-quote-bg">"</div>
+      <div class="narrative-text">${narrative}</div>
+      <div class="narrative-attr">${persona} · DraftBound Profile</div>
+    </div>
+  </div>
+</div>
+
+${editorialMediaHTML ? `
+<div class="divider"></div>
+<div class="section">
+  <div class="section-eyebrow">Highlights &amp; Media</div>
+  <div class="ed-media-grid">${editorialMediaHTML}</div>
+</div>` : ''}
+
+<div class="divider"></div>
+
+<!-- CTA -->
+<div class="cta-section">
+  <div class="cta-label">Interested in ${name.split(' ')[0]}?</div>
+  ${contact}
+</div>
+
 ${footer}
 </body></html>`;
 }
@@ -1903,24 +2283,26 @@ function renderOverview() {
     promptArea.innerHTML = `<div class="prompt-card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><div class="prompt-text"><strong>AI coaching tip:</strong> ${missing[0]}</div></div>`;
   } else { promptArea.innerHTML = ''; }
 
-  const statsToShow = getActiveStats().filter((_,i)=>!(appState.hiddenStatIndices||[]).includes(i)).slice(0,4);
+  const statsToShow = getActiveStats().filter((_,i)=>!(appState.hiddenStatIndices||[]).includes(i));
   const grid = document.getElementById('ov-stat-grid');
-  grid.innerHTML = statsToShow.map(s => `
+  grid.innerHTML = statsToShow.length ? statsToShow.map(s => `
     <div class="stat-card">
       <div class="stat-val">${s.v}</div>
       <div class="stat-lbl">${s.l}</div>
       <div class="stat-season">${appState.season}</div>
-    </div>`).join('');
+    </div>`).join('') : `<div style="grid-column:1/-1;padding:12px 0;font-size:12px;color:var(--text3);">No stats visible — go to Stats tab and toggle some on</div>`;
 
   const mediaGrid = document.getElementById('ov-media-grid');
-  const visibleMedia = appState.media.filter(m=>m.visible);
-  mediaGrid.innerHTML = visibleMedia.map(m => `
+  const eyeOpen = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+  const eyeOff  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+  mediaGrid.innerHTML = appState.media.map(m => `
     <div class="media-thumb ${m.featured?'featured':''} ${m.visible?'':'hidden'}">
       ${mediaThumbHTML(m)}
       ${m.type==='video'?`<div class="media-play"><div class="media-play-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor"/></svg></div></div>`:''}
       ${m.featured?'<div class="media-featured-badge">Featured</div>':''}
-      <div class="media-vis-toggle on" onclick="toggleMediaVisibility('${m.id}',this)" title="Toggle recruiter visibility">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      ${!m.visible?'<div class="media-hidden-label">Hidden</div>':''}
+      <div class="media-vis-toggle ${m.visible?'on':''}" onclick="toggleMediaVisibility('${m.id}',this)" title="${m.visible?'Hide from exports':'Show in exports'}">
+        ${m.visible ? eyeOpen : eyeOff}
       </div>
       <div class="media-info"><div class="media-name">${m.name}</div><div class="media-tag">${(m.tags||[]).length?m.tags.join(' · '):m.tag||''}</div></div>
     </div>`).join('') + `<div class="media-add" onclick="navigateTo('ingest')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span>Add media</span></div>`;
@@ -2212,14 +2594,23 @@ function renderQueue() {
     doc:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`
   };
   area.innerHTML = appState.queue.map(q => `
-    <div class="queue-item">
-      <div class="qi-thumb ${q.type}" style="${q.thumbDataUrl?'padding:0;overflow:hidden;':''}">
-        ${q.thumbDataUrl
-          ? `<img src="${q.thumbDataUrl}" style="width:100%;height:100%;object-fit:cover;" alt="${q.name}"/>`
-          : (typeIcon[q.type]||typeIcon.doc)}
+    <div class="queue-item" style="flex-direction:column;align-items:stretch;gap:0;padding:0;">
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;">
+        <div class="qi-thumb ${q.type}" style="${q.thumbDataUrl?'padding:0;overflow:hidden;':''}">
+          ${q.thumbDataUrl
+            ? `<img src="${q.thumbDataUrl}" style="width:100%;height:100%;object-fit:cover;" alt="${q.name}"/>`
+            : (typeIcon[q.type]||typeIcon.doc)}
+        </div>
+        <div class="qi-info"><div class="qi-name">${q.name}</div><div class="qi-meta">${q.size} · ${q.type}</div></div>
+        <div class="qi-status ${q.status}">${q.status==='queued'?'Queued':q.status==='processing'?'Processing':'Done'}</div>
       </div>
-      <div class="qi-info"><div class="qi-name">${q.name}</div><div class="qi-meta">${q.size} · ${q.type}</div></div>
-      <div class="qi-status ${q.status}">${q.status==='queued'?'Queued':q.status==='processing'?'Processing':'Done'}</div>
+      <div style="padding:0 14px 10px;">
+        <input type="text" placeholder="Clip context: e.g. Q3 · 4th Down Stop, vs. West Orange High…"
+          value="${(q.clipContext||'').replace(/"/g,'&quot;')}"
+          oninput="(function(el){const qi=appState.queue.find(x=>x.id==='${q.id}');if(qi)qi.clipContext=el.value;})(this)"
+          style="width:100%;padding:7px 10px;border:0.5px solid var(--border2);border-radius:var(--r-sm);font-size:11px;font-family:var(--font-body);color:var(--text2);background:var(--surface2);outline:none;"
+          onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border2)'"/>
+      </div>
     </div>`).join('');
 }
 
@@ -2321,6 +2712,7 @@ async function runAIPipeline() {
     const newMedia = {
       id: item.id, type: item.type, name: item.name,
       tag: analysis.aiCaption, tags: analysis.tags,
+      clipContext: item.clipContext || '',
       featured: false, visible: true, isSelectedForExport: true,
       thumbDataUrl: item.thumbDataUrl || null
     };
@@ -2349,15 +2741,16 @@ function toggleMediaVisibility(mediaId, btn) {
   const eyeOff  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
   btn.innerHTML = item.visible ? eyeOpen : eyeOff;
   saveState();
+  renderOverview();
   // sync recruiter view immediately if it's open
   if (document.getElementById('recruiter-view').classList.contains('open')) renderRecruiterView();
-  showToast(item.visible ? 'Visible to recruiters' : 'Hidden from recruiters');
+  showToast(item.visible ? 'Included in exports' : 'Hidden from exports — photo kept');
 }
 
 function renderShareScreen() {
   const a = appState.athlete;
   const p = PERSONA_DATA[appState.persona] || PERSONA_DATA.grinder;
-  const stats = getActiveStats().filter((_,i)=>!(appState.hiddenStatIndices||[]).includes(i)).slice(0,4);
+  const stats = getActiveStats().filter((_,i)=>!(appState.hiddenStatIndices||[]).includes(i));
   document.getElementById('share-name').textContent = a.name;
   document.getElementById('share-meta').textContent = a.position + ' · Class of ' + a.gradYear;
   document.getElementById('share-school').textContent = a.school;
@@ -2395,9 +2788,9 @@ function renderRecruiterView() {
   document.getElementById('rv-persona-sub').textContent = p.sub;
   document.getElementById('rv-narrative-text').textContent = p.preview;
   document.getElementById('rv-persona-attr').textContent = p.name;
-  const stats = getActiveStats().filter((_,i)=>!(appState.hiddenStatIndices||[]).includes(i)).slice(0,4);
+  const stats = getActiveStats().filter((_,i)=>!(appState.hiddenStatIndices||[]).includes(i));
   document.getElementById('rv-stat-grid').innerHTML = stats.map(s=>`<div class="rv-sc"><div class="rv-sv">${s.v}</div><div class="rv-sl">${s.l}</div></div>`).join('');
-  const visMedia = appState.media.filter(m=>m.visible).slice(0,4);
+  const visMedia = appState.media.filter(m=>m.visible);
   document.getElementById('rv-media-grid').innerHTML = visMedia.map(m=>`
     <div class="media-thumb ${m.featured?'featured':''}">
       ${mediaThumbHTML(m)}
