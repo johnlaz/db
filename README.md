@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/banner.svg" alt="DraftBound: a recruiting profile coaches will open" width="100%"/></p>
+
 # DraftBound
 
 A recruiting profile for youth athletes. Turn game photos, stats and a highlight link into a share card, a one-page PDF and a profile website. Free, no account, saved on your device.
